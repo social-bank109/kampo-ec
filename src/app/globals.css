@@ -1,0 +1,60 @@
+:root {
+  --font-sans-stack: var(--font-sans), system-ui, sans-serif;
+  --font-serif-stack: var(--font-serif), var(--font-sans), serif;
+  --font-mono-stack: var(--font-mono), ui-monospace, monospace;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  background: #e9e5da;
+}
+
+body {
+  font-family: var(--font-sans-stack);
+  color: #1f2420;
+  -webkit-font-smoothing: antialiased;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+  box-sizing: border-box;
+}
+
+button {
+  font-family: inherit;
+}
+
+.serif {
+  font-family: var(--font-serif-stack);
+  font-weight: 500;
+  letter-spacing: 0.02em;
+}
+
+.mono {
+  font-family: var(--font-mono-stack);
+}
+
+.scroll::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+}
+.scroll {
+  scrollbar-width: none;
+}
+
+.stage-caption {
+  position: fixed;
+  top: 20px;
+  left: 24px;
+  font-family: var(--font-mono-stack);
+  font-size: 11px;
+  color: #6b6a60;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+.stage-caption b {
+  color: #1f2420;
+  font-weight: 500;
+}
