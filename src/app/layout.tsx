@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Noto_Sans_JP, Noto_Serif_JP, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 
@@ -22,13 +22,28 @@ const mono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "VISTA Wellness — 医療用漢方EC プロトタイプ",
+  title: {
+    default: "VISTA Wellness — 女性のゆらぎに、医師と選ぶ漢方を。",
+    template: "%s | VISTA Wellness",
+  },
+  description:
+    "市販では手に入りにくい医療用漢方を、提携クリニックのオンライン診療を経てお届けします。女性のゆらぎに寄り添う、医師と選ぶ漢方サービス。",
+  applicationName: "VISTA Wellness",
+  robots: { index: true, follow: true },
+};
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  themeColor: "#fcfaf7",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="ja" className={`${sans.variable} ${serif.variable} ${mono.variable}`}>
-      <body>{children}</body>
+      <body>
+        <div className="app-frame">{children}</div>
+      </body>
     </html>
   );
 }

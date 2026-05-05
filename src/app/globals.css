@@ -2,28 +2,38 @@
   --font-sans-stack: var(--font-sans), system-ui, sans-serif;
   --font-serif-stack: var(--font-serif), var(--font-sans), serif;
   --font-mono-stack: var(--font-mono), ui-monospace, monospace;
+  --app-max-width: 480px;
+  --paper: #fcfaf7;
+  --paper-2: #f5efec;
+  --line: #e7dfdb;
+  --tab-bar-height: 64px;
 }
 
-html, body {
+html,
+body {
   margin: 0;
   padding: 0;
-  background: #e9e5da;
+  background: #ebe3df;
 }
 
 body {
   font-family: var(--font-sans-stack);
-  color: #1f2420;
+  color: #2a2326;
   -webkit-font-smoothing: antialiased;
   min-height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 40px 20px;
+}
+
+* {
   box-sizing: border-box;
 }
 
 button {
   font-family: inherit;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
 }
 
 .serif {
@@ -36,25 +46,21 @@ button {
   font-family: var(--font-mono-stack);
 }
 
-.scroll::-webkit-scrollbar {
-  width: 0;
-  height: 0;
-}
-.scroll {
-  scrollbar-width: none;
+.app-frame {
+  max-width: var(--app-max-width);
+  margin: 0 auto;
+  min-height: 100vh;
+  background: var(--paper);
+  position: relative;
 }
 
-.stage-caption {
-  position: fixed;
-  top: 20px;
-  left: 24px;
-  font-family: var(--font-mono-stack);
-  font-size: 11px;
-  color: #6b6a60;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-}
-.stage-caption b {
-  color: #1f2420;
-  font-weight: 500;
+@media (min-width: 600px) {
+  body {
+    padding: 24px 0;
+  }
+  .app-frame {
+    min-height: calc(100vh - 48px);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.06);
+    border-radius: 16px;
+  }
 }

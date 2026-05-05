@@ -200,7 +200,7 @@ export function TabBar({ active, onGo }: { active: string | null; onGo: (id: str
     { id: "check", label: "体質チェック", icon: "check" },
     { id: "order", label: "相談", icon: "chat" },
     { id: "me", label: "マイページ", icon: "me" },
-  ];
+  ] as const;
   const Icon = ({ name, active }: { name: string; active: boolean }) => {
     const s = active ? Palette.sageDeep : Palette.ink3;
     const sw = active ? 1.8 : 1.4;
@@ -236,20 +236,23 @@ export function TabBar({ active, onGo }: { active: string | null; onGo: (id: str
     );
   };
   return (
-    <div
+    <nav
+      aria-label="主要ナビゲーション"
       style={{
-        position: "absolute",
+        position: "fixed",
         left: 0,
         right: 0,
         bottom: 0,
-        paddingBottom: 30,
+        margin: "0 auto",
+        maxWidth: "var(--app-max-width)",
+        paddingBottom: "calc(env(safe-area-inset-bottom, 0px) + 10px)",
         paddingTop: 8,
-        background: "rgba(251,250,246,0.88)",
+        background: "rgba(251,250,246,0.92)",
         backdropFilter: "blur(18px) saturate(160%)",
         WebkitBackdropFilter: "blur(18px) saturate(160%)",
         borderTop: `0.5px solid ${Palette.line}`,
         display: "flex",
-        zIndex: 10,
+        zIndex: 30,
       }}
     >
       {tabs.map((t) => (
@@ -276,7 +279,7 @@ export function TabBar({ active, onGo }: { active: string | null; onGo: (id: str
           {t.label}
         </button>
       ))}
-    </div>
+    </nav>
   );
 }
 

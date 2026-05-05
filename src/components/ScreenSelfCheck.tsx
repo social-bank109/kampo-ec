@@ -70,16 +70,18 @@ export default function ScreenSelfCheck({ go }: { go: Go }) {
       {stage === "q" && (
         <div
           style={{
-            position: "absolute",
+            position: "fixed",
             left: 0,
             right: 0,
             bottom: 0,
-            padding: "12px 16px 30px",
+            margin: "0 auto",
+            maxWidth: "var(--app-max-width)",
+            padding: "12px 16px calc(env(safe-area-inset-bottom, 0px) + 14px)",
             background: "rgba(251,250,246,0.95)",
             backdropFilter: "blur(16px)",
             WebkitBackdropFilter: "blur(16px)",
             borderTop: `0.5px solid ${Palette.line}`,
-            zIndex: 12,
+            zIndex: 30,
           }}
         >
           <CTA variant={canNext ? "sage" : "paper"} onClick={() => canNext && next()}>

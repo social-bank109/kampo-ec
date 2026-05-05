@@ -201,11 +201,13 @@ export default function ScreenDetail({ productId, go }: { productId?: string; go
       {/* sticky bottom bar */}
       <div
         style={{
-          position: "absolute",
+          position: "fixed",
           left: 0,
           right: 0,
           bottom: 0,
-          padding: "10px 14px 30px",
+          margin: "0 auto",
+          maxWidth: "var(--app-max-width)",
+          padding: "10px 14px calc(env(safe-area-inset-bottom, 0px) + 12px)",
           background: "rgba(251,250,246,0.95)",
           backdropFilter: "blur(16px)",
           WebkitBackdropFilter: "blur(16px)",
@@ -213,7 +215,7 @@ export default function ScreenDetail({ productId, go }: { productId?: string; go
           display: "flex",
           gap: 10,
           alignItems: "center",
-          zIndex: 12,
+          zIndex: 30,
         }}
       >
         <div style={{ flexShrink: 0, whiteSpace: "nowrap" }}>
