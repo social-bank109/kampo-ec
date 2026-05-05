@@ -8,12 +8,12 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
   const active =
     pathname === "/"
       ? "top"
-      : pathname.startsWith("/check")
-        ? "check"
-        : pathname.startsWith("/consult")
-          ? "order"
-          : pathname.startsWith("/me")
-            ? "me"
+      : pathname.startsWith("/pricing")
+        ? "pricing"
+        : pathname.startsWith("/check")
+          ? "check"
+          : pathname.startsWith("/consult")
+            ? "order"
             : null;
 
   return (
@@ -25,9 +25,9 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
         active={active}
         onGo={(t) => {
           if (t === "top") router.push("/");
+          else if (t === "pricing") router.push("/pricing");
           else if (t === "check") router.push("/check");
           else if (t === "order") router.push("/consult");
-          else if (t === "me") router.push("/me");
         }}
       />
     </>
