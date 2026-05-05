@@ -373,10 +373,12 @@ export function KampoImage({
   m,
   height = 180,
   width = "100%",
+  fit = "contain",
 }: {
   m: Pick<Medicine, "image" | "placeholder" | "name" | "number" | "tone" | "accent">;
   height?: number | string;
   width?: number | string;
+  fit?: "contain" | "cover";
 }) {
   const tone = m.tone ?? "#eef1ea";
   const accent = m.accent ?? "#6f8a72";
@@ -441,12 +443,24 @@ export function KampoImage({
     );
   }
   return (
-    // 画像差し替え時はここに <Image /> を配置。
-    <img
-      src={m.image}
-      alt={`${m.name}（${m.number}）`}
-      style={{ width, height, objectFit: "cover", borderRadius: 12 }}
-    />
+    <div
+      style={{
+        width,
+        height,
+        background: tone,
+        borderRadius: 12,
+        overflow: "hidden",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+      }}
+    >
+      <img
+        src={m.image}
+        alt={`${m.name}（${m.number}）`}
+        style={{ width: "100%", height: "100%", objectFit: fit, display: "block" }}
+      />
+    </div>
   );
 }
 
