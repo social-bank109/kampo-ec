@@ -20,7 +20,7 @@ export default function ScreenPricing({ go }: { go: Go }) {
       </div>
 
       <div style={{ padding: "20px 16px" }}>
-        <PricingTable onSelect={() => go("check")} />
+        <PricingTable onSelect={() => go("order")} />
       </div>
 
       <section style={{ margin: "0 16px 22px", padding: "20px 18px", background: "#fff", border: `0.5px solid ${Palette.line}`, borderRadius: 18 }}>

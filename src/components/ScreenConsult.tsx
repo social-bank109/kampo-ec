@@ -1,6 +1,7 @@
 "use client";
 import React from "react";
 import { Palette, AppBar, Badge, CTA, SectionHead, ContinuityCards, SafetyNotes, Footer } from "./ui";
+import { LINE_ADD_FRIEND_URL } from "./data";
 import type { Go } from "./navigation";
 
 type AckId = "freedom" | "tax" | "doctor" | "side" | "emergency";
@@ -80,12 +81,17 @@ export default function ScreenConsult({ go }: { go: Go }) {
           disabled={!allAcked}
           onClick={() => {
             if (!allAcked) return;
-            // 申込導線：実装時はクリニック側予約フォーム or LINE 連携 URL に差し替え
-            window.alert("オンライン診療の予約フォームへ進みます（接続先は実装時に設定）");
+            window.open(LINE_ADD_FRIEND_URL, "_blank", "noopener,noreferrer");
           }}
         >
-          オンライン診療を申し込む
+          <LineIcon />
+          LINEで友だち追加してオンライン診療を予約する
         </CTA>
+        <div style={{ fontSize: 11, color: Palette.ink3, textAlign: "center", lineHeight: 1.7 }}>
+          LINEの友だち追加 → 問診 → 予約の順に進みます。
+          <br />
+          この時点では料金は発生しません。
+        </div>
         <CTA variant="ghost" onClick={() => go("check")}>
           先に体質チェックをする
         </CTA>
@@ -128,6 +134,14 @@ export default function ScreenConsult({ go }: { go: Go }) {
 
       <Footer />
     </div>
+  );
+}
+
+function LineIcon() {
+  return (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden>
+      <path d="M12 3C6.5 3 2 6.6 2 11c0 2.8 1.9 5.3 4.8 6.7-.2.6-.7 2.2-.8 2.5-.1.4.1.4.3.3.2-.1 2.4-1.6 3.4-2.3.8.1 1.5.1 2.3.1 5.5 0 10-3.6 10-8S17.5 3 12 3z" />
+    </svg>
   );
 }
 

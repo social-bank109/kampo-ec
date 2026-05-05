@@ -109,15 +109,15 @@ export default function ScreenSelfCheck({ go }: { go: Go }) {
             position: "fixed",
             left: 0,
             right: 0,
-            bottom: 0,
+            bottom: "var(--tab-bar-height)",
             margin: "0 auto",
             maxWidth: "var(--app-max-width)",
-            padding: "12px 16px calc(env(safe-area-inset-bottom, 0px) + 14px)",
+            padding: "12px 16px 14px",
             background: "rgba(251,250,246,0.95)",
             backdropFilter: "blur(16px)",
             WebkitBackdropFilter: "blur(16px)",
             borderTop: `0.5px solid ${Palette.line}`,
-            zIndex: 30,
+            zIndex: 31,
           }}
         >
           <CTA

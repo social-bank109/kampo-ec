@@ -18,9 +18,7 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
 
   return (
     <>
-      <div style={{ paddingBottom: "calc(var(--tab-bar-height) + env(safe-area-inset-bottom, 0px))" }}>
-        {children}
-      </div>
+      <div style={{ paddingBottom: "var(--tab-bar-height)" }}>{children}</div>
       <TabBar
         active={active}
         onGo={(t) => {

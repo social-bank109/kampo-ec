@@ -11,6 +11,9 @@ export const BRAND = {
     "PMS・更年期・睡眠の悩み・ストレスによる体調のゆらぎに。提携クリニックのオンライン診療を通じて、医師が体質や症状を確認し、必要に応じて医療用漢方を処方します。",
 };
 
+// LINE 友だち追加 → オンライン診療予約導線
+export const LINE_ADD_FRIEND_URL = "https://lin.ee/PDxo9Yw";
+
 // ─────────────────────────────────────────────────────────────
 // プラン
 // ─────────────────────────────────────────────────────────────
@@ -112,7 +115,7 @@ export const MEDICINES: Medicine[] = [
     lead: "むくみや重だるさが気になる方の体質ケアに用いられることがあります。",
     description: "体質や症状を医師が確認し、必要と判断した場合に処方されます。",
     image: "/images/kampo/boiogito.jpg",
-    placeholder: true,
+    placeholder: false,
     tone: "#eef1ea",
     accent: "#6f8a72",
     doctorConsiders: [
@@ -137,7 +140,7 @@ export const MEDICINES: Medicine[] = [
     description:
       "痩身効果を保証するものではありません。医師が体質・既往歴を確認したうえで処方を判断します。",
     image: "/images/kampo/bofutsushosan.jpg",
-    placeholder: true,
+    placeholder: false,
     tone: "#efebe1",
     accent: "#8a7a4a",
     doctorConsiders: [
@@ -162,7 +165,7 @@ export const MEDICINES: Medicine[] = [
     lead: "PMSや更年期に伴うイライラ・不安・のぼせなどの相談で用いられることがあります。",
     description: "こころと体のゆらぎに関する相談で選択肢となる漢方です。処方は医師が判断します。",
     image: "/images/kampo/kamishoyosan.jpg",
-    placeholder: true,
+    placeholder: false,
     tone: "#f1e6ea",
     accent: "#8a5a6c",
     doctorConsiders: [
@@ -186,7 +189,7 @@ export const MEDICINES: Medicine[] = [
     lead: "冷え・むくみ・月経に伴う不調が気になる方に用いられることがあります。",
     description: "体力や冷えの有無などを確認したうえで、医師が処方可否を判断します。",
     image: "/images/kampo/tokishakuyakusan.jpg",
-    placeholder: true,
+    placeholder: false,
     tone: "#e9eef0",
     accent: "#5a7283",
     doctorConsiders: [
@@ -207,7 +210,7 @@ export const MEDICINES: Medicine[] = [
     lead: "のぼせや巡りの悪さ、月経に伴う不調が気になる方に用いられることがあります。",
     description: "症状・体質・既往歴を踏まえて、医師が処方を判断します。",
     image: "/images/kampo/keishibukuryogan.jpg",
-    placeholder: true,
+    placeholder: false,
     tone: "#ecebe5",
     accent: "#7a7058",
     doctorConsiders: [
@@ -228,7 +231,7 @@ export const MEDICINES: Medicine[] = [
     lead: "不安感や緊張、のどのつかえ感が気になる方に用いられることがあります。",
     description: "不眠・不安の背景を確認し、必要に応じて専門医療機関への相談も案内します。",
     image: "/images/kampo/hangekobokuto.jpg",
-    placeholder: true,
+    placeholder: false,
     tone: "#e8ece9",
     accent: "#6c8275",
     doctorConsiders: [
@@ -249,7 +252,7 @@ export const MEDICINES: Medicine[] = [
     lead: "心身が疲れているのに眠れない方の相談で用いられることがあります。",
     description: "睡眠薬ではありません。医師が不眠の程度や背景を確認したうえで処方を判断します。",
     image: "/images/kampo/sansonninto.jpg",
-    placeholder: true,
+    placeholder: false,
     tone: "#ebe7ee",
     accent: "#6a5e8a",
     doctorConsiders: [
@@ -273,7 +276,7 @@ export const MEDICINES: Medicine[] = [
     lead: "考えすぎや疲労感、不眠が重なる方の相談で用いられることがあります。",
     description: "体力・睡眠状態・食欲・服薬状況などを確認し、医師が処方を判断します。",
     image: "/images/kampo/kamikihito.jpg",
-    placeholder: true,
+    placeholder: false,
     tone: "#eee8da",
     accent: "#8a6f37",
     doctorConsiders: [
@@ -295,7 +298,7 @@ export const MEDICINES: Medicine[] = [
     lead: "イライラや気の高ぶり、緊張による眠りの浅さが気になる方の相談で用いられることがあります。",
     description: "症状の強さや背景を確認したうえで、医師が処方の可否を判断します。",
     image: "/images/kampo/yokukansan.jpg",
-    placeholder: true,
+    placeholder: false,
     tone: "#e9ece4",
     accent: "#647058",
     doctorConsiders: ["イライラ・気の高ぶり", "緊張で眠れない"],
@@ -311,7 +314,7 @@ export const MEDICINES: Medicine[] = [
     lead: "疲れやすく、気力や食欲が低下している方の相談で用いられることがあります。",
     description: "体力・食欲・現在の服薬状況を確認したうえで、医師が処方を判断します。",
     image: "/images/kampo/hochuekkito.jpg",
-    placeholder: true,
+    placeholder: false,
     tone: "#efeadd",
     accent: "#857237",
     doctorConsiders: ["疲労感が抜けない", "気力・食欲が落ちている"],
@@ -327,7 +330,7 @@ export const MEDICINES: Medicine[] = [
     lead: "胃腸が弱い方のイライラや眠りの浅さで用いられることがあります。",
     description: "胃腸の状態や体力を確認し、医師が処方の可否を判断します。",
     image: "/images/kampo/yokukansankachinpihange.jpg",
-    placeholder: true,
+    placeholder: false,
     tone: "#e8ece8",
     accent: "#5e7a5e",
     doctorConsiders: ["胃腸が弱く、イライラ・不眠が重なる"],

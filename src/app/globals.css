@@ -6,7 +6,7 @@
   --paper: #fcfaf7;
   --paper-2: #f5efec;
   --line: #e7dfdb;
-  --tab-bar-height: 64px;
+  --tab-bar-height: calc(52px + env(safe-area-inset-bottom, 0px));
 }
 
 html,
