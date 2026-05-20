@@ -1,4 +1,4 @@
-import LegalPage, { PlaceholderNotice } from "@/components/LegalPage";
+import LegalPage from "@/components/LegalPage";
 
 export const metadata = { title: "医療広告ガイドラインに基づく表示" };
 
@@ -20,7 +20,6 @@ export default function Page() {
       </p>
       <h3 style={{ marginTop: 18 }}>未承認医薬品の取り扱い</h3>
       <p>本サービスでは、国内で承認されている医療用漢方エキス製剤のみを取り扱います。</p>
-      <PlaceholderNotice />
     </LegalPage>
   );
 }

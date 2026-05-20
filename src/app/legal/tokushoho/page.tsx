@@ -1,4 +1,4 @@
-import LegalPage, { PlaceholderNotice } from "@/components/LegalPage";
+import LegalPage from "@/components/LegalPage";
 
 export const metadata = { title: "特定商取引法に基づく表記" };
 
@@ -7,7 +7,7 @@ export default function Page() {
     <LegalPage title="特定商取引法に基づく表記" kicker="Tokushoho">
       <dl style={{ display: "grid", gridTemplateColumns: "112px 1fr", rowGap: 8, columnGap: 12 }}>
         <dt>事業者名</dt>
-        <dd>（仮）VISTA Wellness 運営事業者</dd>
+        <dd>株式会社Social Bank</dd>
         <dt>所在地</dt>
         <dd>請求があった場合に遅滞なく開示します。</dd>
         <dt>連絡先</dt>
@@ -23,7 +23,6 @@ export default function Page() {
         <dt>返品・キャンセル</dt>
         <dd>医薬品の性質上、原則として返品・キャンセルはお受けできません。</dd>
       </dl>
-      <PlaceholderNotice />
     </LegalPage>
   );
 }

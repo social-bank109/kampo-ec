@@ -1,16 +1,12 @@
-import LegalPage, { PlaceholderNotice } from "@/components/LegalPage";
+import LegalPage from "@/components/LegalPage";
 
 export const metadata = { title: "自由診療について" };
 
 export default function Page() {
   return (
     <LegalPage title="自由診療について" kicker="About">
-      <p>
-        本サービスは自由診療です。公的医療保険は適用されません。
-      </p>
-      <p>
-        診療内容は、オンライン診療による問診・診察、医師による処方判断、医療用漢方の継続処方、配送です。
-      </p>
+      <p>本サービスは自由診療です。公的医療保険は適用されません。</p>
+      <p>診療内容は、オンライン診療による問診・診察、医師による処方判断、医療用漢方の継続処方、配送です。</p>
       <p>
         標準的な費用は、月額3,800円〜15,300円（税別）です。
         処方内容、診療頻度、配送頻度は、医師の判断および利用者の状態により異なります。
@@ -22,7 +18,6 @@ export default function Page() {
       <p>
         体調に強い異変がある場合、希死念慮がある場合、強い抑うつ、不眠、摂食障害が疑われる場合、産後の強い不調がある場合は、速やかにお近くの医療機関または救急相談窓口にご相談ください。
       </p>
-      <PlaceholderNotice />
     </LegalPage>
   );
 }
