@@ -12,7 +12,7 @@ export const BRAND = {
 };
 
 // LINE 友だち追加 → オンライン診療予約導線
-export const LINE_ADD_FRIEND_URL = "https://lin.ee/PDxo9Yw";
+export const LINE_ADD_FRIEND_URL = "https://lin.ee/yn4fg0L";
 
 // ─────────────────────────────────────────────────────────────
 // プラン
