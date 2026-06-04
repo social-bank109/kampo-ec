@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Noto_Sans_JP, Noto_Serif_JP, JetBrains_Mono } from "next/font/google";
+import { Analytics } from "@vercel/analytics/next";
 import "./globals.css";
 
 const sans = Noto_Sans_JP({
@@ -43,6 +44,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="ja" className={`${sans.variable} ${serif.variable} ${mono.variable}`}>
       <body>
         <div className="app-frame">{children}</div>
+        <Analytics />
       </body>
     </html>
   );
