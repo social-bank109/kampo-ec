@@ -122,11 +122,10 @@ export const PRICE_RANGE_LABEL = `月額${PLANS[0].price.toLocaleString()}円〜
 // 漢方マスタ
 //
 // 画像について：
-//   - image は任意（未登録の漢方は placeholder を表示）
+//   - image は任意。未設定の場合、および指定パスの画像が読み込めなかった
+//     場合は placeholder（「写真準備中」の枠）を表示します
 //   - 既存画像は従来の命名（{romaji}.jpg）をそのまま維持
 //   - 新規追加分は kampo-tj{番号}-{romaji}.webp を指定
-//   - 指定パスにファイルを置けばコード変更なしで表示に切り替わります
-//     （読み込みに失敗した場合は自動で placeholder にフォールバック）
 //   - 詳細は docs/kampo-images.md を参照
 // ─────────────────────────────────────────────────────────────
 export type Medicine = {
@@ -232,8 +231,7 @@ export const MEDICINES: Medicine[] = [
       "のぼせ、ほてり、精神的なゆらぎなど、更年期や月経に伴う不調の相談で用いられることがあります。",
     tags: ["更年期", "のぼせ", "気分のゆらぎ"],
     plans: ["standard"],
-    // 画像未登録：docs/kampo-images.md の手順で追加してください
-    image: undefined,
+    image: "/images/kampo/kampo-tj067-nyoshinsan.webp",
     tone: "#eee2e6",
     accent: "#8f4e69",
     doctorConsiders: [
@@ -312,8 +310,7 @@ export const MEDICINES: Medicine[] = [
       "気持ちの高ぶり、不安、緊張、イライラなどの相談で用いられることがあります。",
     tags: ["不安", "緊張", "イライラ"],
     plans: ["standard"],
-    // 画像未登録：docs/kampo-images.md の手順で追加してください
-    image: undefined,
+    image: "/images/kampo/kampo-tj012-saikokaryukotsuboreito.webp",
     tone: "#e9ece4",
     accent: "#647058",
     doctorConsiders: [
@@ -354,8 +351,7 @@ export const MEDICINES: Medicine[] = [
       "手足などの冷えが強い方や、冷えに伴う身体の不調の相談で用いられることがあります。",
     tags: ["冷え", "手足の冷え", "巡り"],
     plans: ["standard"],
-    // 画像未登録：docs/kampo-images.md の手順で追加してください
-    image: undefined,
+    image: "/images/kampo/kampo-tj038-tokishigyakukagoshuyushokyoto.webp",
     tone: "#e7eaef",
     accent: "#5b6b86",
     doctorConsiders: [
@@ -374,8 +370,7 @@ export const MEDICINES: Medicine[] = [
       "冷えとのぼせが混在する場合や、月経に伴う複合的な不調の相談で用いられることがあります。",
     tags: ["冷え", "のぼせ", "月経不調"],
     plans: ["intensive"],
-    // 画像未登録：docs/kampo-images.md の手順で追加してください
-    image: undefined,
+    image: "/images/kampo/kampo-tj106-unkeito.webp",
     tone: "#f3e8e2",
     accent: "#a7665b",
     doctorConsiders: [
