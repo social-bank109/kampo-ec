@@ -1,13 +1,13 @@
 "use client";
 import React from "react";
 import { Palette, AppBar, Badge, CTA, SectionHead, ContinuityCards, SafetyNotes, Footer } from "./ui";
-import { LINE_ADD_FRIEND_URL } from "./data";
+import { LINE_ADD_FRIEND_URL, PRICE_RANGE_LABEL, CONSULTATION_ONLY_FEE, CONSULTATION_ONLY_FEE_INLINE } from "./data";
 import type { Go } from "./navigation";
 
 type AckId = "freedom" | "tax" | "doctor" | "side" | "emergency";
 const ACKS: { id: AckId; label: string }[] = [
   { id: "freedom", label: "自由診療であることを理解しました" },
-  { id: "tax", label: "表示価格は税別であることを理解しました" },
+  { id: "tax", label: "表示価格はすべて税込であることを理解しました" },
   { id: "doctor", label: "医師の判断により処方されない場合があることを理解しました" },
   { id: "side", label: "副作用や体調変化がある場合は医師・薬剤師に相談します" },
   { id: "emergency", label: "緊急性のある症状がある場合は、近隣の医療機関に相談します" },
@@ -88,6 +88,9 @@ export default function ScreenConsult({ go }: { go: Go }) {
           LINEで友だち追加してオンライン診療を予約する
         </CTA>
         <div style={{ fontSize: 11, color: Palette.ink3, textAlign: "center", lineHeight: 1.7 }}>
+          {CONSULTATION_ONLY_FEE_INLINE}
+        </div>
+        <div style={{ fontSize: 11, color: Palette.ink3, textAlign: "center", lineHeight: 1.7 }}>
           LINEの友だち追加 → 問診 → 予約の順に進みます。
           <br />
           この時点では料金は発生しません。
@@ -110,7 +113,7 @@ export default function ScreenConsult({ go }: { go: Go }) {
             },
             {
               q: "自由診療とのことですが、保険は使えますか？",
-              a: "本サービスは自由診療のため、公的医療保険は適用されません。料金は月額3,800円（税別）から、症状や処方内容に応じて4プランをご用意しています。",
+              a: `本サービスは自由診療のため、公的医療保険は適用されません。料金は${PRICE_RANGE_LABEL}で、お悩みや医師が判断する処方内容に応じて4プランをご用意しています。なお、医師の診察の結果、漢方薬を処方しない判断となった場合は診察料${CONSULTATION_ONLY_FEE.toLocaleString()}円（税込）がかかります。`,
             },
             {
               q: "強い薬が出ることはありますか？",
@@ -122,7 +125,7 @@ export default function ScreenConsult({ go }: { go: Go }) {
             },
             {
               q: "配送はどのくらいの頻度ですか？",
-              a: "服薬状況が安定している場合、医師判断のもとで60日〜90日分のまとめ配送に対応する場合があります。配送頻度は処方内容や服薬状況により異なります。",
+              a: "初回は原則30日分を処方し、約1か月後に再診を行います。問題なく継続できる場合は、その後は原則3か月ごとに診察し、90日分をまとめて処方・発送します。",
             },
           ]}
         />
