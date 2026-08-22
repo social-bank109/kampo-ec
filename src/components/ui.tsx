@@ -3,12 +3,19 @@ import React from "react";
 import Link from "next/link";
 import {
   PLANS,
+  PLAN_ORDER,
   CONCERNS,
   PRICE_NOTES,
+  CONSULTATION_ONLY_FEE_INLINE,
+  CONSULTATION_ONLY_FEE_BLOCK,
   COMMON_NOTES,
   SIDE_EFFECTS_GENERAL,
+  TREATMENT_FLOW,
+  HOW_IT_WORKS,
+  tjLabel,
   type Medicine,
   type Plan,
+  type PlanId,
 } from "./data";
 
 // VISTA Wellness — 自由診療オンライン漢方
@@ -369,38 +376,47 @@ export function TabBar({
 // 薬剤画像プレースホルダー
 // 画像は後日 /public/images/kampo/ に配置。placeholder=true の間は枠表示。
 // ─────────────────────────────────────────────────────────────
+/**
+ * 漢方の商品画像。
+ * image が未設定、または読み込みに失敗した場合は placeholder を表示します。
+ * （指定パスにファイルを置けばコード変更なしで実画像に切り替わります）
+ */
 export function KampoImage({
   m,
   height = 180,
   width = "100%",
   fit = "contain",
 }: {
-  m: Pick<Medicine, "image" | "placeholder" | "name" | "number" | "tone" | "accent">;
+  m: Pick<Medicine, "image" | "name" | "number" | "tone" | "accent">;
   height?: number | string;
   width?: number | string;
   fit?: "contain" | "cover";
 }) {
+  const [failed, setFailed] = React.useState(false);
   const tone = m.tone ?? "#eef1ea";
   const accent = m.accent ?? "#6f8a72";
-  if (m.placeholder) {
+  const label = tjLabel(m.number);
+
+  const frame: React.CSSProperties = {
+    width,
+    height,
+    background: tone,
+    borderRadius: 12,
+    position: "relative",
+    overflow: "hidden",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+  };
+
+  if (!m.image || failed) {
     return (
       <div
         role="img"
         aria-label={`${m.name}の写真は準備中です`}
-        style={{
-          width,
-          height,
-          background: tone,
-          borderRadius: 12,
-          position: "relative",
-          overflow: "hidden",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          border: `0.5px solid ${Palette.line}`,
-        }}
+        style={{ ...frame, border: `0.5px solid ${Palette.line}` }}
       >
-        <svg viewBox="0 0 120 160" width="64" height="86" style={{ opacity: 0.55 }}>
+        <svg viewBox="0 0 120 160" width="64" height="86" style={{ opacity: 0.55 }} aria-hidden>
           <rect x="44" y="16" width="32" height="10" rx="2" fill={accent} opacity="0.55" />
           <path
             d="M30 40 Q30 32 38 32 L82 32 Q90 32 90 40 L90 130 Q90 144 76 144 L44 144 Q30 144 30 130 Z"
@@ -421,10 +437,9 @@ export function KampoImage({
             color: accent,
             opacity: 0.8,
             letterSpacing: 0.06,
-            textTransform: "uppercase",
           }}
         >
-          {m.number}
+          {label}
         </div>
         <div
           style={{
@@ -437,27 +452,26 @@ export function KampoImage({
             letterSpacing: 0.04,
           }}
         >
-          薬剤写真準備中
+          写真準備中
         </div>
       </div>
     );
   }
+
   return (
-    <div
-      style={{
-        width,
-        height,
-        background: tone,
-        borderRadius: 12,
-        overflow: "hidden",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-      }}
-    >
+    <div style={frame}>
+      {/*
+        next/image ではなく素の <img> を使用しています。
+        未登録の画像を onError で placeholder に差し替える必要があり、
+        画像最適化を経由すると同じ挙動を素直に再現できないためです。
+      */}
+      {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
         src={m.image}
-        alt={`${m.name}（${m.number}）`}
+        alt={`${m.name}（${label}）`}
+        loading="lazy"
+        decoding="async"
+        onError={() => setFailed(true)}
         style={{ width: "100%", height: "100%", objectFit: fit, display: "block" }}
       />
     </div>
@@ -472,50 +486,46 @@ export function planNameById(id: string): string {
   return p?.name ?? id;
 }
 
+/** 対応プランの表示（1つならその名前、複数なら「最小〜最大」） */
+export function planRangeLabel(plans: PlanId[]): string {
+  const ordered = PLAN_ORDER.filter((p) => plans.includes(p));
+  if (ordered.length === 0) return "";
+  if (ordered.length === 1) return planNameById(ordered[0]);
+  return `${planNameById(ordered[0])}〜${planNameById(ordered[ordered.length - 1])}`;
+}
+
 export function planLabelsForMedicine(m: Pick<Medicine, "plans">): string {
-  return m.plans.map(planNameById).join("〜");
+  return planRangeLabel(m.plans);
 }
 
 // ─────────────────────────────────────────────────────────────
 // 料金プラン表
 // ─────────────────────────────────────────────────────────────
-export function PricingTable({
-  onSelect,
-  compact = false,
-}: {
-  onSelect?: (planId: string) => void;
-  compact?: boolean;
-}) {
+export function PricingTable({ onSelect }: { onSelect?: (planId: PlanId) => void }) {
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
       {PLANS.map((p) => (
-        <PlanCard key={p.id} plan={p} onSelect={onSelect} compact={compact} />
+        <PlanCard key={p.id} plan={p} onSelect={onSelect} />
       ))}
+      <ConsultationOnlyFeeBlock />
       <PriceNotes />
     </div>
   );
 }
 
-function PlanCard({
-  plan,
-  onSelect,
-  compact,
-}: {
-  plan: Plan;
-  onSelect?: (id: string) => void;
-  compact?: boolean;
-}) {
-  const accent =
-    plan.id === "basic" || plan.id === "standard" ? Palette.roseDeep : Palette.line;
-  const isHighlighted = plan.id === "basic" || plan.id === "standard";
+function PlanCard({ plan, onSelect }: { plan: Plan; onSelect?: (id: PlanId) => void }) {
+  const isHighlighted = plan.id === "basic";
+  const borderColor = isHighlighted ? Palette.roseDeep : Palette.line;
   return (
     <div
       style={{
         position: "relative",
-        padding: compact ? "14px 14px" : "18px 18px",
+        padding: "16px 16px 14px",
         background: "#fff",
-        border: `${isHighlighted ? 1 : 0.5}px solid ${isHighlighted ? accent : Palette.line}`,
+        border: `${isHighlighted ? 1 : 0.5}px solid ${borderColor}`,
         borderRadius: 14,
+        display: "flex",
+        flexDirection: "column",
       }}
     >
       {plan.badge && (
@@ -536,49 +546,102 @@ function PlanCard({
           {plan.badge}
         </div>
       )}
-      <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", gap: 8 }}>
+
+      <div
+        style={{
+          fontFamily: "var(--font-mono-stack)",
+          fontSize: 9.5,
+          color: Palette.ink3,
+          letterSpacing: 0.16,
+        }}
+      >
+        {plan.code}
+      </div>
+
+      <div
+        style={{
+          display: "flex",
+          alignItems: "baseline",
+          justifyContent: "space-between",
+          gap: 8,
+          marginTop: 4,
+          flexWrap: "wrap",
+        }}
+      >
         <div className="serif" style={{ fontSize: 18, color: Palette.ink, letterSpacing: 0.04 }}>
           {plan.name}
         </div>
-        <div style={{ display: "flex", alignItems: "baseline", gap: 4, whiteSpace: "nowrap" }}>
-          <span className="serif" style={{ fontSize: plan.id === "intensive" ? 18 : 22, color: Palette.ink, fontWeight: 500 }}>
-            ¥{plan.monthly.toLocaleString()}
+        <div style={{ display: "flex", alignItems: "baseline", gap: 3, whiteSpace: "nowrap" }}>
+          <span className="serif" style={{ fontSize: 25, color: Palette.ink, fontWeight: 500 }}>
+            ¥{plan.price.toLocaleString()}
           </span>
-          <span style={{ fontSize: 11, color: Palette.ink3 }}>/ 月（税別）</span>
+          <span style={{ fontSize: 11, color: Palette.ink3 }}>/ 月（税込）</span>
         </div>
       </div>
-      <div style={{ fontSize: 11, color: Palette.ink3, marginTop: 2, textAlign: "right" }}>
-        税込参考 ¥{plan.monthlyTax.toLocaleString()}
+
+      <div style={{ fontSize: 12, color: Palette.ink2, marginTop: 10, lineHeight: 1.7 }}>
+        <span style={{ color: Palette.ink3 }}>対象 ／ </span>
+        {plan.target}
       </div>
-      <div style={{ fontSize: 12.5, color: Palette.ink2, marginTop: 10, lineHeight: 1.7 }}>
-        <b style={{ color: Palette.ink }}>対象</b> ／ {plan.target}
+      <div style={{ fontSize: 12, color: Palette.ink2, marginTop: 4, lineHeight: 1.7 }}>
+        <span style={{ color: Palette.ink3 }}>内容 ／ </span>
+        {plan.content.split("\n").map((line, i) => (
+          <span key={i}>
+            {i > 0 && <br />}
+            {line}
+          </span>
+        ))}
       </div>
-      <div style={{ fontSize: 12, color: Palette.ink3, marginTop: 4, lineHeight: 1.7 }}>{plan.detail}</div>
-      {plan.highlight && (
-        <div
-          style={{
-            marginTop: 10,
-            padding: "8px 10px",
-            background: Palette.roseTint,
-            color: Palette.roseDeep,
-            fontSize: 11.5,
-            borderRadius: 8,
-          }}
-        >
-          {plan.highlight}
-        </div>
-      )}
-      {!compact && onSelect && (
-        <div style={{ marginTop: 12 }}>
-          <CTA
-            small
-            variant={isHighlighted ? "rose" : "ghost"}
-            onClick={() => onSelect(plan.id)}
-          >
-            {plan.doctorOnly ? "医師に相談する" : "このプランで相談する"}
+
+      <div
+        style={{
+          marginTop: 10,
+          padding: "8px 10px",
+          background: Palette.roseTint,
+          color: Palette.roseDeep,
+          fontSize: 11.5,
+          borderRadius: 8,
+          lineHeight: 1.6,
+        }}
+      >
+        {plan.note}
+      </div>
+
+      {onSelect && (
+        <div style={{ marginTop: "auto", paddingTop: 12 }}>
+          <div style={{ fontSize: 10.5, color: Palette.ink3, lineHeight: 1.65, marginBottom: 8 }}>
+            {CONSULTATION_ONLY_FEE_INLINE}
+          </div>
+          <CTA small variant={isHighlighted ? "rose" : "ghost"} onClick={() => onSelect(plan.id)}>
+            {plan.ctaLabel}
           </CTA>
         </div>
       )}
+    </div>
+  );
+}
+
+/** 処方に至らなかった場合の診察料（料金セクション下部の説明ブロック） */
+export function ConsultationOnlyFeeBlock() {
+  return (
+    <div
+      style={{
+        marginTop: 4,
+        padding: "14px 14px",
+        background: "#fff",
+        border: `0.5px solid ${Palette.line}`,
+        borderLeft: `3px solid ${Palette.roseSoft}`,
+        borderRadius: 10,
+      }}
+    >
+      <div className="serif" style={{ fontSize: 13.5, color: Palette.ink, lineHeight: 1.6 }}>
+        {CONSULTATION_ONLY_FEE_BLOCK.title}
+      </div>
+      {CONSULTATION_ONLY_FEE_BLOCK.body.map((line, i) => (
+        <p key={i} style={{ fontSize: 11.5, color: Palette.ink2, lineHeight: 1.8, margin: "6px 0 0" }}>
+          {line}
+        </p>
+      ))}
     </div>
   );
 }
@@ -587,7 +650,6 @@ export function PriceNotes() {
   return (
     <div
       style={{
-        marginTop: 4,
         padding: "12px 14px",
         background: Palette.paper2,
         borderRadius: 10,
@@ -633,14 +695,26 @@ export function ConcernGrid({ onPick }: { onPick?: (concernId: string) => void }
             textAlign: "left",
             fontFamily: "var(--font-sans-stack)",
             cursor: onPick ? "pointer" : "default",
+            display: "flex",
+            flexDirection: "column",
           }}
         >
           <div className="serif" style={{ fontSize: 13.5, color: Palette.ink, lineHeight: 1.5 }}>
-            {c.label}
+            {c.title}
           </div>
-          <div style={{ fontSize: 10.5, color: Palette.ink3, marginTop: 4, lineHeight: 1.6 }}>{c.description}</div>
-          <div style={{ marginTop: 8, fontSize: 10, color: Palette.roseDeep, letterSpacing: 0.06 }}>
-            対象プラン：{c.plans.map(planNameById).join("〜")}
+          <div style={{ fontSize: 10.5, color: Palette.ink3, marginTop: 4, lineHeight: 1.6 }}>
+            {c.description}
+          </div>
+          <div
+            style={{
+              marginTop: "auto",
+              paddingTop: 8,
+              fontSize: 10,
+              color: Palette.roseDeep,
+              letterSpacing: 0.06,
+            }}
+          >
+            対象プラン：{planRangeLabel(c.plans)}
           </div>
         </button>
       ))}
@@ -649,34 +723,146 @@ export function ConcernGrid({ onPick }: { onPick?: (concernId: string) => void }
 }
 
 // ─────────────────────────────────────────────────────────────
-// 継続しやすい診療・配送設計（4ステップ）
+// 漢方カード（トップ・体質チェック結果で共用）
+// ─────────────────────────────────────────────────────────────
+export function MedicineCard({
+  m,
+  onClick,
+  compact = false,
+}: {
+  m: Medicine;
+  onClick?: () => void;
+  compact?: boolean;
+}) {
+  const imageWidth = compact ? 76 : 96;
+  const imageHeight = compact ? 96 : 120;
+  return (
+    <button
+      onClick={onClick}
+      style={{
+        display: "flex",
+        gap: 12,
+        padding: 12,
+        background: "#fff",
+        border: `0.5px solid ${Palette.line}`,
+        borderRadius: 16,
+        cursor: onClick ? "pointer" : "default",
+        textAlign: "left",
+        alignItems: "stretch",
+        fontFamily: "var(--font-sans-stack)",
+        width: "100%",
+      }}
+    >
+      <div style={{ width: imageWidth, flexShrink: 0 }}>
+        <KampoImage m={m} height={imageHeight} />
+      </div>
+      <div style={{ flex: 1, minWidth: 0, display: "flex", flexDirection: "column" }}>
+        <div
+          style={{
+            fontFamily: "var(--font-mono-stack)",
+            fontSize: 9.5,
+            color: Palette.ink3,
+            letterSpacing: 0.1,
+          }}
+        >
+          {tjLabel(m.number)}
+        </div>
+
+        {/* 長い薬剤名でも折り返して崩れないようにする */}
+        <div
+          className="serif"
+          style={{
+            fontSize: 15,
+            color: Palette.ink,
+            marginTop: 2,
+            letterSpacing: 0.02,
+            lineHeight: 1.4,
+            overflowWrap: "anywhere",
+          }}
+        >
+          {m.name}
+        </div>
+        <div
+          style={{
+            fontSize: 10.5,
+            color: Palette.ink3,
+            marginTop: 1,
+            lineHeight: 1.5,
+            overflowWrap: "anywhere",
+          }}
+        >
+          {m.reading}
+        </div>
+
+        {!compact && (
+          <div style={{ fontSize: 11.5, color: Palette.ink2, marginTop: 6, lineHeight: 1.65 }}>
+            {m.description}
+          </div>
+        )}
+
+        <div style={{ marginTop: 6, display: "flex", flexWrap: "wrap", gap: 4 }}>
+          {m.tags.map((t) => (
+            <span
+              key={t}
+              style={{
+                fontSize: 10,
+                color: Palette.ink3,
+                background: Palette.paper2,
+                border: `0.5px solid ${Palette.line}`,
+                padding: "2px 7px",
+                borderRadius: 999,
+              }}
+            >
+              #{t}
+            </span>
+          ))}
+        </div>
+
+        <div
+          style={{
+            marginTop: "auto",
+            paddingTop: 8,
+            display: "flex",
+            alignItems: "flex-end",
+            justifyContent: "space-between",
+            gap: 8,
+          }}
+        >
+          <div style={{ fontSize: 11, color: Palette.ink2, minWidth: 0 }}>
+            <span style={{ color: Palette.ink3 }}>対応プラン：</span>
+            {planRangeLabel(m.plans)}
+          </div>
+          {onClick && (
+            <div
+              style={{
+                display: "inline-flex",
+                alignItems: "center",
+                gap: 4,
+                fontSize: 11,
+                color: Palette.roseDeep,
+                fontWeight: 500,
+                whiteSpace: "nowrap",
+              }}
+            >
+              詳細を見る
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" aria-hidden>
+                <path d="M5 12h14M13 5l7 7-7 7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+              </svg>
+            </div>
+          )}
+        </div>
+      </div>
+    </button>
+  );
+}
+
+// ─────────────────────────────────────────────────────────────
+// 継続しやすい診療・配送設計（初回30日 → 約1か月後再診 → 3か月ごと日）
 // ─────────────────────────────────────────────────────────────
 export function ContinuityCards() {
-  const items = [
-    {
-      n: "01",
-      t: "初回診療",
-      d: "まずはオンライン問診と医師の診療で、症状・体質・既往歴・服薬状況を確認します。医師が必要と判断した場合にのみ、医療用漢方を処方します。",
-    },
-    {
-      n: "02",
-      t: "初回は短期処方から",
-      d: "初めての処方や変更直後は、体調変化や副作用を確認しやすいよう、短期間の処方から開始する場合があります。",
-    },
-    {
-      n: "03",
-      t: "安定後はまとめ配送",
-      d: "服薬状況が安定している場合、医師判断のもとで60日〜90日分をまとめてお届けできる場合があります。",
-    },
-    {
-      n: "04",
-      t: "定期的な確認",
-      d: "継続中もWeb問診や再診を通じて、効果実感・副作用・症状変化を確認します。必要に応じて処方変更や受診案内を行います。",
-    },
-  ];
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-      {items.map((s) => (
+      {TREATMENT_FLOW.map((s) => (
         <div
           key={s.n}
           style={{
@@ -707,8 +893,12 @@ export function ContinuityCards() {
             {s.n}
           </div>
           <div style={{ flex: 1 }}>
-            <div className="serif" style={{ fontSize: 14, color: Palette.ink }}>{s.t}</div>
-            <div style={{ fontSize: 11.5, color: Palette.ink3, lineHeight: 1.75, marginTop: 2 }}>{s.d}</div>
+            <div className="serif" style={{ fontSize: 14, color: Palette.ink }}>
+              {s.title}
+            </div>
+            <div style={{ fontSize: 11.5, color: Palette.ink3, lineHeight: 1.75, marginTop: 2 }}>
+              {s.body}
+            </div>
           </div>
         </div>
       ))}
@@ -717,30 +907,12 @@ export function ContinuityCards() {
 }
 
 // ─────────────────────────────────────────────────────────────
-// はじめかた（4ステップ：チェック → 診療 → 処方/配送 → 継続）
+// はじめかた
 // ─────────────────────────────────────────────────────────────
 export function HowItWorks() {
-  const steps = [
-    { n: "01", t: "体質チェック", d: "2分ほどの質問で、いまの悩みや体質、服薬状況を整理します。" },
-    {
-      n: "02",
-      t: "オンライン診療",
-      d: "提携クリニックの医師が、症状・既往歴・現在の服薬状況を確認し、処方の可否を判断します。",
-    },
-    {
-      n: "03",
-      t: "処方・お届け",
-      d: "医師が必要と判断した場合、医療用漢方を処方し、ご自宅へお届けします。",
-    },
-    {
-      n: "04",
-      t: "継続フォロー",
-      d: "継続中もWeb問診や再診を通じて、体調変化や副作用の有無を確認します。安定後はまとめ配送にも対応します。",
-    },
-  ];
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-      {steps.map((s) => (
+      {HOW_IT_WORKS.map((s) => (
         <div key={s.n} style={{ display: "flex", gap: 14, alignItems: "flex-start" }}>
           <div
             style={{
@@ -761,8 +933,12 @@ export function HowItWorks() {
             {s.n}
           </div>
           <div style={{ flex: 1 }}>
-            <div className="serif" style={{ fontSize: 14, color: Palette.ink }}>{s.t}</div>
-            <div style={{ fontSize: 11.5, color: Palette.ink2, lineHeight: 1.75, marginTop: 2 }}>{s.d}</div>
+            <div className="serif" style={{ fontSize: 14, color: Palette.ink }}>
+              {s.title}
+            </div>
+            <div style={{ fontSize: 11.5, color: Palette.ink2, lineHeight: 1.75, marginTop: 2 }}>
+              {s.body}
+            </div>
           </div>
         </div>
       ))}
@@ -814,7 +990,8 @@ export function SafetyNotes() {
           副作用・リスクについて
         </summary>
         <div style={{ fontSize: 12, color: Palette.ink2, lineHeight: 1.85, marginTop: 6 }}>
-          漢方薬でも、体質や併用薬によって副作用が生じることがあります。気になる症状がある場合は服用を中止せず、医師または薬剤師にご相談ください。
+          漢方薬でも、体質や併用薬によって副作用が生じることがあります。
+          {COMMON_NOTES.sideEffectConsult}
         </div>
         <ul style={{ margin: "6px 0 0", padding: "0 0 0 18px", fontSize: 11.5, color: Palette.ink3, lineHeight: 1.85 }}>
           {SIDE_EFFECTS_GENERAL.map((s, i) => (
