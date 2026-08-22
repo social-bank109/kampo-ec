@@ -1,21 +1,7 @@
-# 薬剤画像
+# 漢方画像
 
-各薬剤の写真をこのディレクトリに配置してください。
-ファイル名はデータ定義（`src/components/data.ts` の `MEDICINES[].image`）に合わせます。
+漢方の商品画像の配置先です。
 
-```
-boiogito.jpg
-bofutsushosan.jpg
-kamishoyosan.jpg
-tokishakuyakusan.jpg
-keishibukuryogan.jpg
-hangekobokuto.jpg
-sansonninto.jpg
-kamikihito.jpg
-yokukansan.jpg
-hochuekkito.jpg
-yokukansankachinpihange.jpg
-```
+追加手順・命名規則・不足画像の一覧は **[`docs/kampo-images.md`](../../../docs/kampo-images.md)** を参照してください。
 
-画像を配置後、対応する薬剤の `placeholder: true` を `false` に変更すると、
-プレースホルダー枠から実画像表示に切り替わります。
+画像が未登録でもプレースホルダーが表示されるため、404 やビルドエラーにはなりません。
