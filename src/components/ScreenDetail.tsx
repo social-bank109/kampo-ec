@@ -1,6 +1,12 @@
 "use client";
 import React from "react";
-import { MEDICINES, SIDE_EFFECTS_GENERAL, COMMON_NOTES } from "./data";
+import {
+  MEDICINES,
+  SIDE_EFFECTS_GENERAL,
+  COMMON_NOTES,
+  DOCTOR_DECIDES_NOTE,
+  tjLabel,
+} from "./data";
 import {
   Palette,
   AppBar,
@@ -10,12 +16,13 @@ import {
   KampoImage,
   SectionHead,
   Footer,
-  planLabelsForMedicine,
+  planRangeLabel,
 } from "./ui";
 import type { Go } from "./navigation";
 
 export default function ScreenDetail({ productId, go }: { productId?: string; go: Go }) {
   const m = MEDICINES.find((x) => x.id === productId) || MEDICINES[0];
+  const planLabel = planRangeLabel(m.plans);
 
   return (
     <div style={{ paddingBottom: 96, background: Palette.paper }}>
@@ -23,17 +30,52 @@ export default function ScreenDetail({ productId, go }: { productId?: string; go
 
       {/* hero */}
       <div style={{ padding: "6px 16px 0" }}>
-        <div style={{ background: m.tone ?? Palette.paper2, borderRadius: 18, padding: "20px 18px 14px", position: "relative" }}>
+        <div
+          style={{
+            background: m.tone ?? Palette.paper2,
+            borderRadius: 18,
+            padding: "20px 18px 14px",
+            position: "relative",
+          }}
+        >
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 10 }}>
             <div style={{ minWidth: 0, flex: 1 }}>
-              <div style={{ fontFamily: "var(--font-mono-stack)", fontSize: 10, color: m.accent ?? Palette.roseDeep, letterSpacing: 0.18 }}>
-                {m.number} · 医療用漢方
+              <div
+                style={{
+                  fontFamily: "var(--font-mono-stack)",
+                  fontSize: 10,
+                  color: m.accent ?? Palette.roseDeep,
+                  letterSpacing: 0.18,
+                }}
+              >
+                {tjLabel(m.number)} · 医療用漢方
               </div>
-              <h1 className="serif" style={{ fontSize: 22, color: Palette.ink, margin: "6px 0 0", letterSpacing: 0.03, lineHeight: 1.3 }}>
+              {/* 長い薬剤名でも折り返して崩れないようにする */}
+              <h1
+                className="serif"
+                style={{
+                  fontSize: 21,
+                  color: Palette.ink,
+                  margin: "6px 0 0",
+                  letterSpacing: 0.02,
+                  lineHeight: 1.4,
+                  overflowWrap: "anywhere",
+                }}
+              >
                 {m.name}
               </h1>
-              <div style={{ fontFamily: "var(--font-serif-stack)", fontSize: 11, color: Palette.ink3, marginTop: 2, letterSpacing: 0.15 }}>
-                {m.kana}
+              <div
+                style={{
+                  fontFamily: "var(--font-serif-stack)",
+                  fontSize: 11.5,
+                  color: Palette.ink3,
+                  marginTop: 3,
+                  letterSpacing: 0.1,
+                  lineHeight: 1.5,
+                  overflowWrap: "anywhere",
+                }}
+              >
+                {m.reading}
               </div>
             </div>
             <Badge tone="green">医師が診療のうえ処方判断</Badge>
@@ -45,19 +87,35 @@ export default function ScreenDetail({ productId, go }: { productId?: string; go
       </div>
 
       <div style={{ padding: "20px 20px 4px" }}>
-        <p style={{ fontSize: 13, color: Palette.ink2, lineHeight: 1.85, margin: 0 }}>{m.lead}</p>
+        <p style={{ fontSize: 13, color: Palette.ink2, lineHeight: 1.85, margin: 0 }}>{m.description}</p>
 
-        {/* 対応プラン・対応する悩み */}
-        <div style={{ marginTop: 14, padding: "12px 14px", background: "#fff", border: `0.5px solid ${Palette.line}`, borderRadius: 12 }}>
+        {/* 対応プラン */}
+        <div
+          style={{
+            marginTop: 14,
+            padding: "12px 14px",
+            background: "#fff",
+            border: `0.5px solid ${Palette.line}`,
+            borderRadius: 12,
+          }}
+        >
           <div style={{ fontSize: 11, color: Palette.ink3 }}>対応プラン</div>
           <div className="serif" style={{ fontSize: 16, color: Palette.ink, marginTop: 2 }}>
-            {planLabelsForMedicine(m)}
+            {planLabel}
           </div>
           <div style={{ fontSize: 11, color: Palette.ink3, marginTop: 6, lineHeight: 1.7 }}>
-            ※実際の処方は医師が診療のうえ判断します。料金プランの詳細は{" "}
+            ※{DOCTOR_DECIDES_NOTE}料金プランの詳細は{" "}
             <button
               onClick={() => go("pricing")}
-              style={{ background: "transparent", border: "none", color: Palette.roseDeep, cursor: "pointer", padding: 0, fontSize: 11 }}
+              style={{
+                background: "transparent",
+                border: "none",
+                color: Palette.roseDeep,
+                cursor: "pointer",
+                padding: 0,
+                fontSize: 11,
+                fontFamily: "inherit",
+              }}
             >
               料金プラン
             </button>
@@ -65,9 +123,10 @@ export default function ScreenDetail({ productId, go }: { productId?: string; go
           </div>
         </div>
 
+        {/* 対応する悩み */}
         <div style={{ display: "flex", gap: 6, flexWrap: "wrap", marginTop: 12 }}>
           <div style={{ fontSize: 11, color: Palette.ink3, width: "100%", marginBottom: 2 }}>対応する悩み</div>
-          {m.concerns.map((t) => (
+          {m.tags.map((t) => (
             <Badge key={t} tone="paper">
               #{t}
             </Badge>
@@ -77,7 +136,6 @@ export default function ScreenDetail({ productId, go }: { productId?: string; go
 
       <Hair m="20px 20px 0" />
 
-      {/* 医師が検討するケース */}
       <Section title="医師が検討するケース" kicker="When considered">
         <ul style={{ margin: 0, padding: "0 0 0 18px", fontSize: 12.5, color: Palette.ink2, lineHeight: 1.85 }}>
           {(m.doctorConsiders ?? []).map((t, i) => (
@@ -91,22 +149,22 @@ export default function ScreenDetail({ productId, go }: { productId?: string; go
 
       <Hair m="0 20px" />
 
-      {/* 注意が必要なケース */}
       <Section title="注意が必要なケース" kicker="Caution">
         <ul style={{ margin: 0, padding: "0 0 0 18px", fontSize: 12.5, color: Palette.ink2, lineHeight: 1.85 }}>
           {(m.cautionCases ?? []).map((t, i) => (
             <li key={i}>{t}</li>
           ))}
-          <li>妊娠中・授乳中、強い抑うつ・希死念慮、摂食障害が疑われる場合は、専門医療機関への相談を優先してください。</li>
+          <li>
+            妊娠中・授乳中、強い抑うつ・希死念慮、摂食障害が疑われる場合は、専門医療機関への相談を優先してください。
+          </li>
         </ul>
       </Section>
 
       <Hair m="0 20px" />
 
-      {/* 副作用・リスク */}
       <Section title="副作用・リスクについて" kicker="Side effects">
         <p style={{ fontSize: 12.5, color: Palette.ink2, lineHeight: 1.85, margin: 0 }}>
-          漢方薬でも、体質や併用薬によって副作用が生じることがあります。気になる症状がある場合は服用を中止せず、医師または薬剤師にご相談ください。
+          漢方薬でも、体質や併用薬によって副作用が生じることがあります。{COMMON_NOTES.sideEffectConsult}
         </p>
         <ul style={{ margin: "8px 0 0", padding: "0 0 0 18px", fontSize: 12, color: Palette.ink3, lineHeight: 1.85 }}>
           {SIDE_EFFECTS_GENERAL.map((s, i) => (
@@ -117,7 +175,6 @@ export default function ScreenDetail({ productId, go }: { productId?: string; go
 
       <Hair m="0 20px" />
 
-      {/* 共通注意 */}
       <Section title="このページについて" kicker="Disclaimer">
         <div
           style={{
@@ -165,10 +222,10 @@ export default function ScreenDetail({ productId, go }: { productId?: string; go
           zIndex: 30,
         }}
       >
-        <div style={{ flexShrink: 0, whiteSpace: "nowrap" }}>
+        <div style={{ flexShrink: 0, minWidth: 0 }}>
           <div style={{ fontSize: 9.5, color: Palette.ink3, whiteSpace: "nowrap" }}>対応プラン</div>
           <div className="serif" style={{ fontSize: 13, color: Palette.ink, whiteSpace: "nowrap" }}>
-            {planLabelsForMedicine(m)}
+            {planLabel}
           </div>
         </div>
         <div style={{ flex: 1, minWidth: 0 }}>
