@@ -41,38 +41,31 @@
 
 ## 現在の登録状況
 
-### 登録済み（既存の命名を維持）
+**取り扱い11剤すべて登録済みです。** 未登録の漢方はありません。
 
 | 漢方 | TJ番号 | ファイル名 |
 | --- | --- | --- |
 | 防已黄耆湯 | TJ020 | `boiogito.jpg` |
 | 防風通聖散 | TJ062 | `bofutsushosan.jpg` |
 | 加味逍遙散 | TJ024 | `kamishoyosan.jpg` |
+| 女神散 | TJ067 | `kampo-tj067-nyoshinsan.webp` |
 | 酸棗仁湯 | TJ103 | `sansonninto.jpg` |
 | 加味帰脾湯 | TJ137 | `kamikihito.jpg` |
 | 半夏厚朴湯 | TJ016 | `hangekobokuto.jpg` |
+| 柴胡加竜骨牡蛎湯 | TJ012 | `kampo-tj012-saikokaryukotsuboreito.webp` |
 | 当帰芍薬散 | TJ023 | `tokishakuyakusan.jpg` |
+| 当帰四逆加呉茱萸生姜湯 | TJ038 | `kampo-tj038-tokishigyakukagoshuyushokyoto.webp` |
+| 温経湯 | TJ106 | `kampo-tj106-unkeito.webp` |
 
-### 未登録（追加が必要）
-
-配置先はいずれも `public/images/kampo/` です。
-
-| 漢方 | TJ番号 | 指定ファイル名 | data.ts の設定 |
-| --- | --- | --- | --- |
-| 女神散 | TJ067 | `kampo-tj067-nyoshinsan.webp` | `image: undefined` → パスに要変更 |
-| 柴胡加竜骨牡蛎湯 | TJ012 | `kampo-tj012-saikokaryukotsuboreito.webp` | `image: undefined` → パスに要変更 |
-| 当帰四逆加呉茱萸生姜湯 | TJ038 | `kampo-tj038-tokishigyakukagoshuyushokyoto.webp` | `image: undefined` → パスに要変更 |
-| 温経湯 | TJ106 | `kampo-tj106-unkeito.webp` | `image: undefined` → パスに要変更 |
-
-画像を配置したら、`src/components/data.ts` の該当箇所を次のように書き換えてください。
+今後、新しい漢方を追加する場合は、`public/images/kampo/` に画像を置いたうえで、
+`src/components/data.ts` の該当エントリに `image` を設定してください。
 
 ```ts
-// 変更前
-image: undefined,
-
-// 変更後（例：女神散）
 image: "/images/kampo/kampo-tj067-nyoshinsan.webp",
 ```
+
+`image` を設定していない漢方、および指定パスの画像が読み込めなかった場合は、
+プレースホルダー（「写真準備中」の枠）が表示されます。404 やビルドエラーにはなりません。
 
 ### 現在は未使用の画像
 
