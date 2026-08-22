@@ -79,7 +79,7 @@ image: "/images/kampo/kampo-tj067-nyoshinsan.webp",
 以下は標準処方体系の見直しにより、サイト上の表示対象から外れた漢方の画像です。
 ファイルは削除せず残してあります（将来取り扱いを再開する場合に備えて）。
 
-- `keishibukuryogan.jpg`（桂枝茜苓丸）
+- `keishibukuryogan.jpg`（桂枝茯苓丸）
 - `yokukansan.jpg`（抑肝散）
 - `yokukansankachinpihange.jpg`（抑肝散加陳皮半夏）
 - `hochuekkito.jpg`（補中益気湯）
