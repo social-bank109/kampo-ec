@@ -188,7 +188,7 @@ export default function ScreenTop({ go }: { go: Go }) {
       >
         <SectionHead
           kicker="Pricing"
-          title="続けやすい、2つの定期診療プラン"
+          title="続けやすい、4つの定期診療プラン"
           sub="VISTA Wellnessでは、症状の重さや処方内容に応じて、4つの自由診療プランをご用意しています。初回は医師が体質・症状・服薬状況を確認し、必要に応じて医療用漢方を処方します。安定後は、まとめ配送により通院や受け取りの負担を抑えながら継続できます。"
         />
         <PricingTable onSelect={() => go("order")} />
