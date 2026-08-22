@@ -1,6 +1,6 @@
 "use client";
 import React from "react";
-import { BRAND, MEDICINES, type Medicine } from "./data";
+import { BRAND, MEDICINES, MEDICINE_SECTION_NOTE, PLANS } from "./data";
 import {
   Palette,
   Badge,
@@ -12,15 +12,12 @@ import {
   HowItWorks,
   SafetyNotes,
   Footer,
-  KampoImage,
+  MedicineCard,
   iconBtnStyle,
-  planLabelsForMedicine,
 } from "./ui";
 import type { Go } from "./navigation";
 
 export default function ScreenTop({ go }: { go: Go }) {
-  const featured = MEDICINES.filter((m) => m.featured).slice(0, 8);
-
   return (
     <div style={{ background: Palette.paper }}>
       {/* brand header */}
@@ -98,12 +95,12 @@ export default function ScreenTop({ go }: { go: Go }) {
           <p style={{ fontSize: 12.5, color: Palette.ink2, lineHeight: 1.85, margin: "12px 0 0" }}>
             PMS・更年期・睡眠の悩み・ストレスによる体調のゆらぎに。
             <br />
-            提携クリニックのオンライン診療を通じて、医師が体質や症状を確認し、必要に応じて医療用漢方を処方します。
+            提携クリニックのオンライン診療を通じて、あなたの体質や症状に合わせた医療用漢方を医師が処方します。
           </p>
           <div style={{ display: "flex", flexWrap: "wrap", gap: 6, marginTop: 14 }}>
             <Badge tone="green">医師が処方判断</Badge>
             <Badge tone="paper">継続処方</Badge>
-            <Badge tone="paper">安定後まとめ配送</Badge>
+            <Badge tone="paper">自宅へお届け</Badge>
           </div>
           <div style={{ display: "flex", gap: 8, marginTop: 18, flexWrap: "wrap" }}>
             <CTA small full={false} variant="rose" onClick={() => go("check")}>
@@ -118,7 +115,15 @@ export default function ScreenTop({ go }: { go: Go }) {
       </div>
 
       {/* Why VISTA */}
-      <section style={{ margin: "0 16px 18px", padding: "18px 18px", background: "#fff", border: `0.5px solid ${Palette.line}`, borderRadius: 14 }}>
+      <section
+        style={{
+          margin: "0 16px 18px",
+          padding: "18px 18px",
+          background: "#fff",
+          border: `0.5px solid ${Palette.line}`,
+          borderRadius: 14,
+        }}
+      >
         <SectionHead kicker="Why VISTA" title="自己判断ではなく、医師と選ぶ漢方ケア。" />
         <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
           {[
@@ -128,11 +133,11 @@ export default function ScreenTop({ go }: { go: Go }) {
             },
             {
               t: "医療用漢方を継続しやすく",
-              d: "医療機関で用いられる漢方エキス製剤を、オンライン診療後にご自宅へ。安定後はまとめ配送にも対応します。",
+              d: "医療機関で用いられる漢方エキス製剤を、オンライン診療後にご自宅へ。初回は原則30日分、継続後は3か月ごとの診察・90日分のまとめ配送に移行します。",
             },
             {
-              t: "月額3,800円から始められる",
-              d: "ライト、ベーシック、スタンダード、集中ケアの4プラン。症状や処方内容に応じて、続けやすいプランをご案内します。",
+              t: `月額${PLANS[0].price.toLocaleString()}円から始められる`,
+              d: "ライト、ベーシック、スタンダード、集中ケアの4プラン。お悩みや医師が判断する処方内容に応じて、適切なプランをご案内します。",
             },
           ].map((x, i) => (
             <div key={i} style={{ display: "flex", gap: 10, alignItems: "flex-start" }}>
@@ -183,7 +188,7 @@ export default function ScreenTop({ go }: { go: Go }) {
       >
         <SectionHead
           kicker="Pricing"
-          title="続けやすい、4つの定期診療プラン"
+          title="続けやすい、2つの定期診療プラン"
           sub="VISTA Wellnessでは、症状の重さや処方内容に応じて、4つの自由診療プランをご用意しています。初回は医師が体質・症状・服薬状況を確認し、必要に応じて医療用漢方を処方します。安定後は、まとめ配送により通院や受け取りの負担を抑えながら継続できます。"
         />
         <PricingTable onSelect={() => go("order")} />
@@ -194,17 +199,25 @@ export default function ScreenTop({ go }: { go: Go }) {
         <SectionHead
           kicker="Formulations"
           title="医師が診療のうえ処方する医療用漢方"
-          sub="以下は取り扱い候補の一例です。実際の処方は、オンライン診療で医師が体質・症状・既往歴・服薬状況を確認したうえで判断します。"
+          sub={MEDICINE_SECTION_NOTE}
         />
       </section>
       <div style={{ display: "flex", flexDirection: "column", gap: 12, padding: "4px 16px 24px" }}>
-        {featured.map((m) => (
+        {MEDICINES.map((m) => (
           <MedicineCard key={m.id} m={m} onClick={() => go("detail", m.id)} />
         ))}
       </div>
 
       {/* Continuity */}
-      <section style={{ margin: "0 16px 22px", padding: "20px 18px", background: "#fff", border: `0.5px solid ${Palette.line}`, borderRadius: 18 }}>
+      <section
+        style={{
+          margin: "0 16px 22px",
+          padding: "20px 18px",
+          background: "#fff",
+          border: `0.5px solid ${Palette.line}`,
+          borderRadius: 18,
+        }}
+      >
         <SectionHead kicker="Continuity" title="継続しやすい診療・配送設計" />
         <ContinuityCards />
       </section>
@@ -242,72 +255,5 @@ function Arrow() {
     <svg width="12" height="12" viewBox="0 0 24 24" fill="none" aria-hidden>
       <path d="M5 12h14M13 5l7 7-7 7" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
     </svg>
-  );
-}
-
-function MedicineCard({ m, onClick }: { m: Medicine; onClick: () => void }) {
-  return (
-    <button
-      onClick={onClick}
-      style={{
-        display: "flex",
-        gap: 14,
-        padding: 12,
-        background: "#fff",
-        border: `0.5px solid ${Palette.line}`,
-        borderRadius: 16,
-        cursor: "pointer",
-        textAlign: "left",
-        alignItems: "stretch",
-        fontFamily: "var(--font-sans-stack)",
-      }}
-    >
-      <div style={{ width: 96, flexShrink: 0 }}>
-        <KampoImage m={m} height={120} />
-      </div>
-      <div style={{ flex: 1, display: "flex", flexDirection: "column", justifyContent: "space-between", minWidth: 0 }}>
-        <div>
-          <div style={{ display: "flex", alignItems: "center", gap: 6, flexWrap: "wrap" }}>
-            <div style={{ fontFamily: "var(--font-mono-stack)", fontSize: 9.5, color: Palette.ink3, letterSpacing: 0.1 }}>
-              {m.number}
-            </div>
-            <Badge tone="green">医師が診療のうえ処方判断</Badge>
-          </div>
-          <div className="serif" style={{ fontSize: 15.5, color: Palette.ink, marginTop: 4, letterSpacing: 0.04 }}>
-            {m.name}{" "}
-            <span style={{ fontSize: 10.5, color: Palette.ink3, fontWeight: 400 }}>（{m.kana}）</span>
-          </div>
-          <div style={{ fontSize: 11.5, color: Palette.ink2, marginTop: 5, lineHeight: 1.6 }}>{m.lead}</div>
-          <div style={{ marginTop: 6, display: "flex", flexWrap: "wrap", gap: 4 }}>
-            {m.concerns.slice(0, 3).map((c) => (
-              <span
-                key={c}
-                style={{
-                  fontSize: 10,
-                  color: Palette.ink3,
-                  background: Palette.paper2,
-                  border: `0.5px solid ${Palette.line}`,
-                  padding: "2px 7px",
-                  borderRadius: 999,
-                }}
-              >
-                #{c}
-              </span>
-            ))}
-          </div>
-        </div>
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginTop: 8, gap: 8 }}>
-          <div style={{ fontSize: 11, color: Palette.ink2 }}>
-            <span style={{ color: Palette.ink3 }}>対応プラン：</span>
-            {planLabelsForMedicine(m)}
-            <div style={{ fontSize: 10, color: Palette.ink3, marginTop: 2 }}>※医師の診療により処方判断</div>
-          </div>
-          <div style={{ display: "inline-flex", alignItems: "center", gap: 4, fontSize: 11, color: Palette.roseDeep, fontWeight: 500, whiteSpace: "nowrap" }}>
-            詳細を見る
-            <Arrow />
-          </div>
-        </div>
-      </div>
-    </button>
   );
 }

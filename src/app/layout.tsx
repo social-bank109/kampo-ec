@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Noto_Sans_JP, Noto_Serif_JP, JetBrains_Mono } from "next/font/google";
 import { Analytics } from "@vercel/analytics/next";
+import { BRAND, PRICE_RANGE_LABEL } from "@/components/data";
 import "./globals.css";
 
 const sans = Noto_Sans_JP({
@@ -22,15 +23,29 @@ const mono = JetBrains_Mono({
   display: "swap",
 });
 
+const SITE_TITLE = `VISTA Wellness — ${BRAND.tagline}`;
+const SITE_DESCRIPTION = `${BRAND.subtagline} 自由診療・${PRICE_RANGE_LABEL}。`;
+
 export const metadata: Metadata = {
   title: {
-    default: "VISTA Wellness — 女性のゆらぎに、医師と選ぶ漢方を。",
+    default: SITE_TITLE,
     template: "%s | VISTA Wellness",
   },
-  description:
-    "市販では手に入りにくい医療用漢方を、提携クリニックのオンライン診療を経てお届けします。女性のゆらぎに寄り添う、医師と選ぶ漢方サービス。",
+  description: SITE_DESCRIPTION,
   applicationName: "VISTA Wellness",
   robots: { index: true, follow: true },
+  openGraph: {
+    type: "website",
+    siteName: "VISTA Wellness",
+    title: SITE_TITLE,
+    description: SITE_DESCRIPTION,
+    locale: "ja_JP",
+  },
+  twitter: {
+    card: "summary",
+    title: SITE_TITLE,
+    description: SITE_DESCRIPTION,
+  },
 };
 
 export const viewport: Viewport = {
