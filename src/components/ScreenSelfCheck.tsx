@@ -6,6 +6,7 @@ import {
   Q3_OPTIONS,
   Q4_ITEMS,
   Q5_OPTIONS,
+  CONSULTATION_ONLY_FEE_INLINE,
   evaluateAnswers,
   type CheckAnswers,
   type Q1Id,
@@ -17,10 +18,8 @@ import {
   Badge,
   CTA,
   SectionHead,
-  KampoImage,
+  MedicineCard,
   Footer,
-  planNameById,
-  planLabelsForMedicine,
 } from "./ui";
 import type { Go } from "./navigation";
 
@@ -469,7 +468,7 @@ function Result({
     );
   }
 
-  const { primaryPlan, alternativePlans, medicineCandidates, cautions } = result;
+  const { concern, primaryPlan, alternativePlans, medicineCandidates, cautions } = result;
 
   return (
     <div style={{ padding: "24px 20px 40px" }}>
@@ -480,7 +479,7 @@ function Result({
         合う可能性があります。
       </h1>
       <p style={{ fontSize: 12.5, color: Palette.ink2, lineHeight: 1.85, marginTop: 10 }}>
-        {primaryPlan.target}に対応するプランです。
+        {concern ? `「${concern.title}」のご相談に対応するプランです。` : `${primaryPlan.target}に対応するプランです。`}
         実際の処方は、オンライン診療で医師が体質・症状・既往歴・服薬状況を確認したうえで判断します。
       </p>
 
@@ -494,23 +493,29 @@ function Result({
           borderRadius: 14,
         }}
       >
-        <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between" }}>
+        <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", gap: 8, flexWrap: "wrap" }}>
           <div className="serif" style={{ fontSize: 18, color: Palette.ink }}>
             {primaryPlan.name}
           </div>
-          <div style={{ display: "flex", alignItems: "baseline", gap: 4 }}>
-            <span className="serif" style={{ fontSize: 22, color: Palette.ink, fontWeight: 500 }}>
-              ¥{primaryPlan.monthly.toLocaleString()}
+          <div style={{ display: "flex", alignItems: "baseline", gap: 3, whiteSpace: "nowrap" }}>
+            <span className="serif" style={{ fontSize: 23, color: Palette.ink, fontWeight: 500 }}>
+              ¥{primaryPlan.price.toLocaleString()}
             </span>
-            <span style={{ fontSize: 11, color: Palette.ink3 }}>/ 月（税別）</span>
+            <span style={{ fontSize: 11, color: Palette.ink3 }}>/ 月（税込）</span>
           </div>
         </div>
-        <div style={{ fontSize: 12, color: Palette.ink2, marginTop: 8, lineHeight: 1.7 }}>{primaryPlan.detail}</div>
+        <div style={{ fontSize: 12, color: Palette.ink2, marginTop: 8, lineHeight: 1.7 }}>
+          {primaryPlan.content.split("\n")[0]}
+        </div>
+        <div style={{ fontSize: 10.5, color: Palette.ink3, marginTop: 8, lineHeight: 1.7 }}>
+          {CONSULTATION_ONLY_FEE_INLINE}
+        </div>
       </div>
 
       {alternativePlans.length > 0 && (
-        <div style={{ marginTop: 10, fontSize: 11.5, color: Palette.ink3 }}>
-          このほか、{alternativePlans.map((p) => p.name).join(" / ")} プランも症状の組み合わせによって候補になります。
+        <div style={{ marginTop: 10, fontSize: 11.5, color: Palette.ink3, lineHeight: 1.7 }}>
+          このほか、{alternativePlans.map((p) => p.name).join(" / ")} プランも、
+          医師が確認する処方内容によっては候補になります。
         </div>
       )}
 
@@ -523,33 +528,7 @@ function Result({
           />
           <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
             {medicineCandidates.map((m) => (
-              <button
-                key={m.id}
-                onClick={() => go("detail", m.id)}
-                style={{
-                  display: "flex",
-                  gap: 12,
-                  padding: 12,
-                  background: "#fff",
-                  border: `0.5px solid ${Palette.line}`,
-                  borderRadius: 14,
-                  cursor: "pointer",
-                  textAlign: "left",
-                  fontFamily: "var(--font-sans-stack)",
-                }}
-              >
-                <div style={{ width: 72, flexShrink: 0 }}>
-                  <KampoImage m={m} height={92} />
-                </div>
-                <div style={{ flex: 1, minWidth: 0 }}>
-                  <div style={{ fontFamily: "var(--font-mono-stack)", fontSize: 9.5, color: Palette.ink3 }}>{m.number}</div>
-                  <div className="serif" style={{ fontSize: 14.5, color: Palette.ink, marginTop: 2 }}>{m.name}</div>
-                  <div style={{ fontSize: 11, color: Palette.ink2, marginTop: 4, lineHeight: 1.6 }}>{m.lead}</div>
-                  <div style={{ fontSize: 10.5, color: Palette.roseDeep, marginTop: 6 }}>
-                    対応プラン：{planLabelsForMedicine(m)}
-                  </div>
-                </div>
-              </button>
+              <MedicineCard key={m.id} m={m} compact onClick={() => go("detail", m.id)} />
             ))}
           </div>
         </div>
