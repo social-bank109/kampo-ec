@@ -12,6 +12,10 @@ import {
   SIDE_EFFECTS_GENERAL,
   TREATMENT_FLOW,
   HOW_IT_WORKS,
+  TRIAL_PLAN,
+  IS_TRIAL_PHASE,
+  FUTURE_PLAN_NOTE,
+  concernsForMedicine,
   tjLabel,
   type Medicine,
   type Plan,
@@ -498,10 +502,42 @@ export function planLabelsForMedicine(m: Pick<Medicine, "plans">): string {
   return planRangeLabel(m.plans);
 }
 
+/** 漢方に対応する相談テーマの表示（例：「睡眠 / 産後の体調」） */
+export function concernLabelForMedicine(m: Pick<Medicine, "id">): string {
+  return concernsForMedicine(m.id)
+    .map((c) => c.shortTitle)
+    .join(" / ");
+}
+
+/**
+ * 漢方カード等の補足ラベル。
+ * trial フェーズではプラン名を出さず（4プラン提供中と誤認されないため）、
+ * 対応する相談テーマで表示する。full フェーズでは対応プランを表示する。
+ */
+export function medicineMetaLabel(m: Pick<Medicine, "id" | "plans">): { label: string; value: string } {
+  if (IS_TRIAL_PHASE) return { label: "対応する相談内容", value: concernLabelForMedicine(m) };
+  return { label: "対応プラン", value: planRangeLabel(m.plans) };
+}
+
 // ─────────────────────────────────────────────────────────────
 // 料金プラン表
 // ─────────────────────────────────────────────────────────────
-export function PricingTable({ onSelect }: { onSelect?: (planId: PlanId) => void }) {
+/**
+ * 料金表。
+ * trial フェーズ：お試しプランの大きな1カード + 処方なし診察料 + 注記 + 今後のプラン展開（補足）
+ * full フェーズ ：4プランカード + 処方なし診察料 + 注記
+ */
+export function PricingTable({ onSelect }: { onSelect?: (planId: string) => void }) {
+  if (IS_TRIAL_PHASE) {
+    return (
+      <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+        <TrialPlanCard onSelect={onSelect ? () => onSelect(TRIAL_PLAN.id) : undefined} />
+        <ConsultationOnlyFeeBlock />
+        <PriceNotes />
+        <FuturePlansNote />
+      </div>
+    );
+  }
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
       {PLANS.map((p) => (
@@ -513,7 +549,139 @@ export function PricingTable({ onSelect }: { onSelect?: (planId: PlanId) => void
   );
 }
 
-function PlanCard({ plan, onSelect }: { plan: Plan; onSelect?: (id: PlanId) => void }) {
+/** お試しプラン（現在提供中の唯一のプラン） */
+export function TrialPlanCard({ onSelect }: { onSelect?: () => void }) {
+  return (
+    <div
+      style={{
+        position: "relative",
+        padding: "24px 20px 20px",
+        background: "#fff",
+        border: `1.5px solid ${Palette.roseDeep}`,
+        borderRadius: 18,
+        boxShadow: "0 6px 20px rgba(138,90,108,0.08)",
+      }}
+    >
+      <div
+        style={{
+          position: "absolute",
+          top: -11,
+          left: "50%",
+          transform: "translateX(-50%)",
+          background: Palette.roseDeep,
+          color: "#fff",
+          fontSize: 10.5,
+          letterSpacing: 0.08,
+          padding: "4px 12px",
+          borderRadius: 999,
+          whiteSpace: "nowrap",
+        }}
+      >
+        現在ご案内中のプラン
+      </div>
+
+      <div style={{ textAlign: "center" }}>
+        <div className="serif" style={{ fontSize: 20, color: Palette.ink, letterSpacing: 0.06 }}>
+          {TRIAL_PLAN.name}
+        </div>
+        <div style={{ display: "flex", alignItems: "baseline", justifyContent: "center", gap: 4, marginTop: 6 }}>
+          <span className="serif" style={{ fontSize: 38, color: Palette.ink, fontWeight: 500, lineHeight: 1.1 }}>
+            ¥{TRIAL_PLAN.price.toLocaleString()}
+          </span>
+          <span style={{ fontSize: 12, color: Palette.ink3 }}>/ 月（税込）</span>
+        </div>
+        <div style={{ fontSize: 11.5, color: Palette.ink2, marginTop: 10, lineHeight: 1.75 }}>
+          {TRIAL_PLAN.positioning}
+        </div>
+      </div>
+
+      <div style={{ height: 1, background: Palette.line, margin: "16px 0 14px" }} />
+
+      <div style={{ fontSize: 11, color: Palette.ink3, marginBottom: 6 }}>内容</div>
+      <ul style={{ margin: 0, padding: 0, listStyle: "none", display: "flex", flexDirection: "column", gap: 6 }}>
+        {TRIAL_PLAN.contents.map((c) => (
+          <li key={c} style={{ display: "flex", gap: 8, alignItems: "flex-start", fontSize: 12.5, color: Palette.ink, lineHeight: 1.6 }}>
+            <svg width="14" height="14" viewBox="0 0 12 12" fill="none" aria-hidden style={{ flexShrink: 0, marginTop: 3 }}>
+              <path d="M2 6.5l2.8 2.8L10 3.5" stroke={Palette.roseDeep} strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+            {c}
+          </li>
+        ))}
+      </ul>
+
+      <div style={{ fontSize: 11, color: Palette.ink3, margin: "14px 0 6px" }}>相談できるお悩み</div>
+      <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
+        {CONCERNS.map((c) => (
+          <span
+            key={c.id}
+            style={{
+              fontSize: 11,
+              color: Palette.roseDeep,
+              background: Palette.roseTint,
+              border: `0.5px solid #e6cfd6`,
+              padding: "3px 9px",
+              borderRadius: 999,
+            }}
+          >
+            {c.shortTitle}
+          </span>
+        ))}
+      </div>
+      <div style={{ fontSize: 11.5, color: Palette.ink2, marginTop: 10, lineHeight: 1.75 }}>{TRIAL_PLAN.note}</div>
+      <div style={{ fontSize: 11, color: Palette.ink3, marginTop: 6, lineHeight: 1.75 }}>
+        ※実際の処方は医師が症状・体質・既往歴・服薬状況等を確認して個別に判断します。
+      </div>
+
+      {onSelect && (
+        <div style={{ marginTop: 16 }}>
+          <div style={{ fontSize: 10.5, color: Palette.ink3, lineHeight: 1.65, marginBottom: 8, textAlign: "center" }}>
+            {CONSULTATION_ONLY_FEE_INLINE}
+          </div>
+          <CTA variant="rose" onClick={onSelect}>
+            {TRIAL_PLAN.ctaLabel}
+          </CTA>
+        </div>
+      )}
+    </div>
+  );
+}
+
+/** 今後のプラン展開（現在は提供していない4プランの補足表示。価格は出さない） */
+export function FuturePlansNote() {
+  return (
+    <div
+      style={{
+        marginTop: 6,
+        padding: "12px 14px",
+        border: `0.5px dashed ${Palette.line}`,
+        borderRadius: 10,
+      }}
+    >
+      <div style={{ fontSize: 11.5, color: Palette.ink2, fontWeight: 500 }}>今後のプラン展開</div>
+      <div style={{ fontSize: 10.5, color: Palette.ink3, marginTop: 4, lineHeight: 1.7 }}>{FUTURE_PLAN_NOTE}</div>
+      <div style={{ display: "flex", flexWrap: "wrap", gap: 6, marginTop: 8 }}>
+        {PLANS.map((p) => (
+          <span
+            key={p.id}
+            style={{
+              fontSize: 10.5,
+              color: Palette.ink3,
+              background: Palette.paper2,
+              border: `0.5px solid ${Palette.line}`,
+              padding: "2px 8px",
+              borderRadius: 999,
+            }}
+          >
+            {p.name}
+          </span>
+        ))}
+      </div>
+      <div style={{ fontSize: 10, color: Palette.ink3, marginTop: 8 }}>※現在は提供していません。</div>
+    </div>
+  );
+}
+
+function PlanCard({ plan, onSelect }: { plan: Plan; onSelect?: (id: string) => void }) {
   const isHighlighted = plan.id === "basic";
   const borderColor = isHighlighted ? Palette.roseDeep : Palette.line;
   return (
@@ -714,7 +882,7 @@ export function ConcernGrid({ onPick }: { onPick?: (concernId: string) => void }
               letterSpacing: 0.06,
             }}
           >
-            対象プラン：{planRangeLabel(c.plans)}
+            {IS_TRIAL_PHASE ? "このテーマで相談する →" : `対象プラン：${planRangeLabel(c.plans)}`}
           </div>
         </button>
       ))}
@@ -829,8 +997,8 @@ export function MedicineCard({
           }}
         >
           <div style={{ fontSize: 11, color: Palette.ink2, minWidth: 0 }}>
-            <span style={{ color: Palette.ink3 }}>対応プラン：</span>
-            {planRangeLabel(m.plans)}
+            <span style={{ color: Palette.ink3 }}>{medicineMetaLabel(m).label}：</span>
+            {medicineMetaLabel(m).value}
           </div>
           {onClick && (
             <div
@@ -857,7 +1025,7 @@ export function MedicineCard({
 }
 
 // ─────────────────────────────────────────────────────────────
-// 継続しやすい診療・配送設計（初回30日 → 約1か月後再診 → 3か月ごと日）
+// 継続しやすい診療・配送設計（初回30日 → 約1か月後再診 → 3か月ごと90日）
 // ─────────────────────────────────────────────────────────────
 export function ContinuityCards() {
   return (

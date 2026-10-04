@@ -5,6 +5,8 @@ import {
   SIDE_EFFECTS_GENERAL,
   COMMON_NOTES,
   DOCTOR_DECIDES_NOTE,
+  IS_TRIAL_PHASE,
+  TRIAL_PLAN,
   tjLabel,
 } from "./data";
 import {
@@ -16,13 +18,14 @@ import {
   KampoImage,
   SectionHead,
   Footer,
-  planRangeLabel,
+  medicineMetaLabel,
 } from "./ui";
 import type { Go } from "./navigation";
 
 export default function ScreenDetail({ productId, go }: { productId?: string; go: Go }) {
   const m = MEDICINES.find((x) => x.id === productId) || MEDICINES[0];
-  const planLabel = planRangeLabel(m.plans);
+  // trial フェーズでは「対応する相談内容」、full フェーズでは「対応プラン」を表示
+  const meta = medicineMetaLabel(m);
 
   return (
     <div style={{ paddingBottom: 96, background: Palette.paper }}>
@@ -99,12 +102,12 @@ export default function ScreenDetail({ productId, go }: { productId?: string; go
             borderRadius: 12,
           }}
         >
-          <div style={{ fontSize: 11, color: Palette.ink3 }}>対応プラン</div>
+          <div style={{ fontSize: 11, color: Palette.ink3 }}>{meta.label}</div>
           <div className="serif" style={{ fontSize: 16, color: Palette.ink, marginTop: 2 }}>
-            {planLabel}
+            {meta.value}
           </div>
           <div style={{ fontSize: 11, color: Palette.ink3, marginTop: 6, lineHeight: 1.7 }}>
-            ※{DOCTOR_DECIDES_NOTE}料金プランの詳細は{" "}
+            ※{DOCTOR_DECIDES_NOTE}料金は{" "}
             <button
               onClick={() => go("pricing")}
               style={{
@@ -117,7 +120,7 @@ export default function ScreenDetail({ productId, go }: { productId?: string; go
                 fontFamily: "inherit",
               }}
             >
-              料金プラン
+              お試しプラン
             </button>
             をご覧ください。
           </div>
@@ -223,10 +226,21 @@ export default function ScreenDetail({ productId, go }: { productId?: string; go
         }}
       >
         <div style={{ flexShrink: 0, minWidth: 0 }}>
-          <div style={{ fontSize: 9.5, color: Palette.ink3, whiteSpace: "nowrap" }}>対応プラン</div>
-          <div className="serif" style={{ fontSize: 13, color: Palette.ink, whiteSpace: "nowrap" }}>
-            {planLabel}
-          </div>
+          {IS_TRIAL_PHASE ? (
+            <>
+              <div style={{ fontSize: 9.5, color: Palette.ink3, whiteSpace: "nowrap" }}>{TRIAL_PLAN.name}</div>
+              <div className="serif" style={{ fontSize: 13, color: Palette.ink, whiteSpace: "nowrap" }}>
+                ¥{TRIAL_PLAN.price.toLocaleString()} / 月（税込）
+              </div>
+            </>
+          ) : (
+            <>
+              <div style={{ fontSize: 9.5, color: Palette.ink3, whiteSpace: "nowrap" }}>{meta.label}</div>
+              <div className="serif" style={{ fontSize: 13, color: Palette.ink, whiteSpace: "nowrap" }}>
+                {meta.value}
+              </div>
+            </>
+          )}
         </div>
         <div style={{ flex: 1, minWidth: 0 }}>
           <CTA variant="rose" small onClick={() => go("check")}>

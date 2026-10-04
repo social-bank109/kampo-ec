@@ -4,13 +4,18 @@ import {
   Q1_OPTIONS,
   Q2_OPTIONS,
   Q3_OPTIONS,
-  Q4_ITEMS,
-  Q5_OPTIONS,
+  IMPACT_OPTIONS,
+  SAFETY_ITEMS,
+  CONSULT_LEVELS,
+  CONCERNS,
+  TRIAL_PLAN,
   CONSULTATION_ONLY_FEE_INLINE,
   evaluateAnswers,
+  findConcern,
   type CheckAnswers,
+  type ConsultLevel,
+  type ImpactId,
   type Q1Id,
-  type Q5Id,
 } from "./data";
 import {
   Palette,
@@ -55,15 +60,11 @@ export default function ScreenSelfCheck({ go }: { go: Go }) {
     if (idx === 0) return Boolean(answers.q1);
     if (idx === 1) return (answers.q2?.length ?? 0) > 0;
     if (idx === 2) return (answers.q3?.length ?? 0) > 0;
-    if (idx === 3) return Boolean(answers.q4); // 全てに「はい/いいえ」回答必須
-    if (idx === 4) return Boolean(answers.q5);
+    if (idx === 3) return Boolean(answers.impact);
+    // 安全確認は全項目に「はい/いいえ」の回答が必要
+    if (idx === 4) return SAFETY_ITEMS.every((i) => answers.safety != null && i.id in answers.safety);
     return false;
   })();
-
-  // Q4 は全項目「はい/いいえ」が選ばれているかで完了判定
-  const q4AllAnswered =
-    answers.q4 != null && Q4_ITEMS.every((i) => i.id in (answers.q4 as Record<string, boolean>));
-  const canNextStrict = idx === 3 ? q4AllAnswered : canNext;
 
   return (
     <div style={{ background: Palette.paper, minHeight: "100%" }}>
@@ -91,16 +92,8 @@ export default function ScreenSelfCheck({ go }: { go: Go }) {
       </div>
 
       {stage === "intro" && <Intro onStart={() => setStage("q")} />}
-      {stage === "q" && (
-        <Question
-          idx={idx}
-          answers={answers}
-          setAnswers={setAnswers}
-        />
-      )}
-      {stage === "result" && (
-        <Result answers={answers} onRestart={restart} go={go} />
-      )}
+      {stage === "q" && <Question idx={idx} answers={answers} setAnswers={setAnswers} />}
+      {stage === "result" && <Result answers={answers} onRestart={restart} go={go} />}
 
       {stage === "q" && (
         <div
@@ -119,11 +112,7 @@ export default function ScreenSelfCheck({ go }: { go: Go }) {
             zIndex: 31,
           }}
         >
-          <CTA
-            variant={canNextStrict ? "rose" : "paper"}
-            disabled={!canNextStrict}
-            onClick={() => canNextStrict && next()}
-          >
+          <CTA variant={canNext ? "rose" : "paper"} disabled={!canNext} onClick={() => canNext && next()}>
             {idx === TOTAL - 1 ? "結果を見る" : "次へ"}
             <svg width="12" height="12" viewBox="0 0 24 24" fill="none">
               <path d="M5 12h14M13 5l7 7-7 7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
@@ -140,22 +129,35 @@ export default function ScreenSelfCheck({ go }: { go: Go }) {
 function Intro({ onStart }: { onStart: () => void }) {
   return (
     <div style={{ padding: "28px 22px 40px" }}>
-      <Badge>自己チェック · 診断ではありません</Badge>
-      <h1 className="serif" style={{ fontSize: 24, color: Palette.ink, lineHeight: 1.55, margin: "14px 0 0", letterSpacing: 0.02 }}>
-        いまの悩みと体質を、
+      <Badge>セルフチェック · 診断ではありません</Badge>
+      <h1 className="serif" style={{ fontSize: 23, color: Palette.ink, lineHeight: 1.55, margin: "14px 0 0", letterSpacing: 0.02 }}>
+        今のあなたが、
         <br />
-        やさしく整理しましょう。
+        いちばん相談したい不調は？
       </h1>
       <p style={{ fontSize: 12.5, color: Palette.ink2, lineHeight: 1.85, marginTop: 12 }}>
-        病名を当てるためのテストではありません。
-        生活のなかで感じている不調と、いまの体質・服薬状況を整理し、
-        自由診療プランの目安としてご案内します。
+        いくつかの質問に答えることで、今の体調や気になる症状を整理できます。
+        結果は診断ではなく、オンライン診療でどの悩みを優先して相談するかを考えるための目安です。
       </p>
+      <div
+        style={{
+          marginTop: 10,
+          padding: "10px 12px",
+          background: Palette.paper2,
+          border: `0.5px solid ${Palette.line}`,
+          borderRadius: 10,
+          fontSize: 11.5,
+          color: Palette.ink2,
+          lineHeight: 1.75,
+        }}
+      >
+        医療用漢方が適しているかどうか、実際に処方できるかどうかは医師が診療のうえ判断します。
+      </div>
 
       <div style={{ marginTop: 22, display: "flex", flexDirection: "column", gap: 12 }}>
         {[
-          { n: "01", t: "5問・約2分", d: "悩み・症状・体質・安全確認・希望プランの順に進みます。" },
-          { n: "02", t: "プランの目安をご提案", d: "あなたに合いそうな自由診療プランの候補と、対応する漢方の例を表示します。" },
+          { n: "01", t: "5問・約2分", d: "悩み・症状・体質・生活への影響・安全確認の順に進みます。" },
+          { n: "02", t: "相談したいテーマを整理", d: "回答の傾向から、優先して医師に相談するとよいテーマを表示します。" },
           { n: "03", t: "医師が診療のうえ判断", d: "実際の処方は、提携クリニックの医師が診療のうえ判断します。" },
         ].map((p) => (
           <div key={p.n} style={{ display: "flex", gap: 14, alignItems: "flex-start" }}>
@@ -176,7 +178,7 @@ function Intro({ onStart }: { onStart: () => void }) {
         </CTA>
       </div>
       <div style={{ fontSize: 10.5, color: Palette.ink3, textAlign: "center", marginTop: 12, lineHeight: 1.7 }}>
-        本チェックは診断ではありません。実際の処方の可否は医師が診療のうえ判断します。
+        料金プランを判定するものではありません。サービス開始初期は{TRIAL_PLAN.name}のみでご案内しています。
       </div>
     </div>
   );
@@ -212,7 +214,7 @@ function Question({
     return (
       <QShell title="現在の症状で当てはまるものを選んでください" sub="複数選択できます。">
         <Multi
-          options={Q2_OPTIONS as readonly string[]}
+          options={Q2_OPTIONS.map((o) => o.label)}
           selected={answers.q2 ?? []}
           onChange={(v) => setAnswers((a) => ({ ...a, q2: v }))}
         />
@@ -223,7 +225,7 @@ function Question({
     return (
       <QShell title="あなたの体質に近いものを選んでください" sub="複数選択できます。">
         <Multi
-          options={Q3_OPTIONS as readonly string[]}
+          options={Q3_OPTIONS.map((o) => o.label)}
           selected={answers.q3 ?? []}
           onChange={(v) => setAnswers((a) => ({ ...a, q3: v }))}
         />
@@ -231,55 +233,47 @@ function Question({
     );
   }
   if (idx === 3) {
-    const q4 = answers.q4 ?? {};
     return (
-      <QShell
-        title="安全のためにご確認ください"
-        sub="すべての項目に「はい」または「いいえ」でお答えください。"
-      >
+      <QShell title="今の不調は、生活にどのくらい影響していますか？" sub="いちばん近いものを選んでください。">
         <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-          {Q4_ITEMS.map((it) => {
-            const v = q4[it.id];
+          {IMPACT_OPTIONS.map((o) => {
+            const on = answers.impact === o.id;
             return (
-              <div
-                key={it.id}
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: 10,
-                  padding: "12px 14px",
-                  background: "#fff",
-                  border: `0.5px solid ${Palette.line}`,
-                  borderRadius: 12,
-                }}
-              >
-                <div style={{ flex: 1, fontSize: 12.5, color: Palette.ink, lineHeight: 1.6 }}>{it.label}</div>
-                <YesNo
-                  value={v}
-                  onChange={(val) =>
-                    setAnswers((a) => ({ ...a, q4: { ...(a.q4 ?? {}), [it.id]: val } }))
-                  }
-                />
-              </div>
+              <button key={o.id} onClick={() => setAnswers((a) => ({ ...a, impact: o.id as ImpactId }))} style={optStyle(on)}>
+                <Check on={on} shape="circle" />
+                <div style={{ flex: 1, textAlign: "left" }}>{o.label}</div>
+              </button>
             );
           })}
         </div>
       </QShell>
     );
   }
-  // idx === 4
+  // idx === 4：安全確認
+  const safety = answers.safety ?? {};
   return (
-    <QShell title="ご希望の進め方を選んでください" sub="医師の処方判断の参考になります。">
+    <QShell title="安全のためにご確認ください" sub="すべての項目に「はい」または「いいえ」でお答えください。">
       <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-        {Q5_OPTIONS.map((o) => {
-          const on = answers.q5 === o.id;
-          return (
-            <button key={o.id} onClick={() => setAnswers((a) => ({ ...a, q5: o.id as Q5Id }))} style={optStyle(on)}>
-              <Check on={on} shape="circle" />
-              <div style={{ flex: 1, textAlign: "left" }}>{o.label}</div>
-            </button>
-          );
-        })}
+        {SAFETY_ITEMS.map((it) => (
+          <div
+            key={it.id}
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: 10,
+              padding: "12px 14px",
+              background: "#fff",
+              border: `0.5px solid ${Palette.line}`,
+              borderRadius: 12,
+            }}
+          >
+            <div style={{ flex: 1, fontSize: 12.5, color: Palette.ink, lineHeight: 1.6 }}>{it.label}</div>
+            <YesNo
+              value={safety[it.id]}
+              onChange={(val) => setAnswers((a) => ({ ...a, safety: { ...(a.safety ?? {}), [it.id]: val } }))}
+            />
+          </div>
+        ))}
       </div>
     </QShell>
   );
@@ -398,41 +392,81 @@ function Check({ on, shape }: { on: boolean; shape: "circle" | "square" }) {
   );
 }
 
-function Result({
-  answers,
-  onRestart,
-  go,
-}: {
-  answers: CheckAnswers;
-  onRestart: () => void;
-  go: Go;
-}) {
-  const result = React.useMemo(() => evaluateAnswers(answers), [answers]);
+function LevelCard({ level }: { level: ConsultLevel }) {
+  const l = CONSULT_LEVELS[level];
+  const tone =
+    level === "refer"
+      ? { bg: Palette.noticeBg, bd: Palette.noticeBorder, fg: "#6a5b1f" }
+      : level === "recommend"
+        ? { bg: Palette.roseTint, bd: "#e6cfd6", fg: Palette.roseDeep }
+        : { bg: Palette.greenTint, bd: "#cfdbcb", fg: Palette.greenDeep };
+  return (
+    <div style={{ padding: "12px 14px", background: tone.bg, border: `0.5px solid ${tone.bd}`, borderRadius: 12 }}>
+      <div style={{ fontSize: 10.5, color: Palette.ink3 }}>漢方相談の目安</div>
+      <div className="serif" style={{ fontSize: 15, color: tone.fg, marginTop: 2 }}>{l.title}</div>
+      <div style={{ fontSize: 12, color: Palette.ink2, marginTop: 4, lineHeight: 1.8 }}>{l.body}</div>
+    </div>
+  );
+}
 
-  if (result.hasDanger) {
+function ScoreBars({ scores }: { scores: Record<string, number> }) {
+  const max = Math.max(1, ...Object.values(scores));
+  return (
+    <div style={{ padding: "12px 14px", background: "#fff", border: `0.5px solid ${Palette.line}`, borderRadius: 12 }}>
+      <div style={{ fontSize: 10.5, color: Palette.ink3, marginBottom: 8 }}>回答の傾向</div>
+      {CONCERNS.map((c) => (
+        <div key={c.id} style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 6 }}>
+          <div style={{ width: 84, fontSize: 11, color: Palette.ink2, flexShrink: 0 }}>{c.shortTitle}</div>
+          <div style={{ flex: 1, height: 6, background: Palette.paper2, borderRadius: 999, overflow: "hidden" }}>
+            <div
+              style={{
+                width: `${((scores[c.id] ?? 0) / max) * 100}%`,
+                height: "100%",
+                background: Palette.rose,
+                transition: "width 0.6s ease",
+              }}
+            />
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function Result({ answers, onRestart, go }: { answers: CheckAnswers; onRestart: () => void; go: Go }) {
+  const result = React.useMemo(() => evaluateAnswers(answers), [answers]);
+  const primary = findConcern(result.primaryConcern);
+  const secondary = findConcern(result.secondaryConcern);
+
+  // 安全確認で該当がある場合：主訴の提示より医療機関への相談案内を優先する
+  if (result.safetyFlag) {
     return (
       <div style={{ padding: "24px 20px 40px" }}>
-        <Badge tone="notice">早めの医療機関ご相談を</Badge>
+        <Badge tone="notice">医療機関への相談をおすすめします</Badge>
         <h1 className="serif" style={{ fontSize: 22, color: Palette.ink, lineHeight: 1.55, margin: "12px 0 0", letterSpacing: 0.02 }}>
-          ご回答内容から、早めに医療機関へ相談した方がよい可能性があります。
+          医療機関への相談をおすすめします
         </h1>
         <p style={{ fontSize: 12.5, color: Palette.ink2, lineHeight: 1.85, marginTop: 10 }}>
-          本サービスでは、医師が診療のうえ対応可否を判断しますが、緊急性がある場合や強い不調がある場合は、
-          お近くの医療機関、救急相談窓口、精神科・産婦人科等へご相談ください。
+          ご回答の中に、早めに医療機関へ相談した方がよい可能性のある項目が含まれていました。
+          緊急性がある場合や強い不調がある場合は、お近くの医療機関、救急相談窓口、精神科・心療内科・産婦人科等へご相談ください。
         </p>
+
+        <div style={{ marginTop: 14 }}>
+          <LevelCard level="refer" />
+        </div>
 
         <div
           style={{
-            marginTop: 16,
+            marginTop: 12,
             padding: "14px 14px",
             background: Palette.noticeBg,
             border: `0.5px solid ${Palette.noticeBorder}`,
             borderRadius: 12,
           }}
         >
-          <div className="serif" style={{ fontSize: 13, color: "#6a5b1f" }}>該当した内容</div>
+          <div className="serif" style={{ fontSize: 13, color: "#6a5b1f" }}>該当した項目</div>
           <ul style={{ margin: "6px 0 0", padding: "0 0 0 18px", fontSize: 12, color: "#6a5b1f", lineHeight: 1.85 }}>
-            {result.dangerSigns.map((s, i) => (
+            {result.safetyItems.map((s, i) => (
               <li key={i}>{s}</li>
             ))}
           </ul>
@@ -440,7 +474,7 @@ function Result({
 
         <div
           style={{
-            marginTop: 14,
+            marginTop: 12,
             padding: "12px 14px",
             background: "#fff",
             border: `0.5px solid ${Palette.line}`,
@@ -454,7 +488,15 @@ function Result({
           <br />・お近くの医療機関 / 心療内科・精神科 / 産婦人科
           <br />・厚生労働省 こころの健康相談統一ダイヤル
           <br />・救急相談センター（#7119 など、地域により異なります）
+          <br />・命に関わる緊急時は 119
         </div>
+
+        {primary && (
+          <div style={{ marginTop: 14, fontSize: 11.5, color: Palette.ink3, lineHeight: 1.75 }}>
+            参考：回答からは「{primary.title}」に関する項目が比較的多く見られました。
+            医療機関へご相談のうえ、必要に応じて改めて漢方についてもご相談ください。
+          </div>
+        )}
 
         <div style={{ marginTop: 18, display: "flex", flexDirection: "column", gap: 10 }}>
           <CTA variant="ghost" onClick={onRestart}>
@@ -468,58 +510,54 @@ function Result({
     );
   }
 
-  const { concern, primaryPlan, alternativePlans, medicineCandidates, cautions } = result;
-
   return (
     <div style={{ padding: "24px 20px 40px" }}>
-      <Badge>あなたへのプラン候補</Badge>
-      <h1 className="serif" style={{ fontSize: 24, color: Palette.ink, lineHeight: 1.55, margin: "12px 0 0", letterSpacing: 0.02 }}>
-        あなたには「<span style={{ color: Palette.roseDeep }}>{primaryPlan.name}</span>」プランが
-        <br />
-        合う可能性があります。
-      </h1>
-      <p style={{ fontSize: 12.5, color: Palette.ink2, lineHeight: 1.85, marginTop: 10 }}>
-        {concern ? `「${concern.title}」のご相談に対応するプランです。` : `${primaryPlan.target}に対応するプランです。`}
-        実際の処方は、オンライン診療で医師が体質・症状・既往歴・服薬状況を確認したうえで判断します。
-      </p>
+      <Badge>体調の整理結果</Badge>
 
-      {/* primary plan card */}
-      <div
-        style={{
-          marginTop: 16,
-          padding: "16px 16px",
-          background: "#fff",
-          border: `1px solid ${Palette.roseDeep}`,
-          borderRadius: 14,
-        }}
-      >
-        <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", gap: 8, flexWrap: "wrap" }}>
-          <div className="serif" style={{ fontSize: 18, color: Palette.ink }}>
-            {primaryPlan.name}
-          </div>
-          <div style={{ display: "flex", alignItems: "baseline", gap: 3, whiteSpace: "nowrap" }}>
-            <span className="serif" style={{ fontSize: 23, color: Palette.ink, fontWeight: 500 }}>
-              ¥{primaryPlan.price.toLocaleString()}
-            </span>
-            <span style={{ fontSize: 11, color: Palette.ink3 }}>/ 月（税込）</span>
-          </div>
-        </div>
-        <div style={{ fontSize: 12, color: Palette.ink2, marginTop: 8, lineHeight: 1.7 }}>
-          {primaryPlan.content.split("\n")[0]}
-        </div>
-        <div style={{ fontSize: 10.5, color: Palette.ink3, marginTop: 8, lineHeight: 1.7 }}>
-          {CONSULTATION_ONLY_FEE_INLINE}
-        </div>
-      </div>
-
-      {alternativePlans.length > 0 && (
-        <div style={{ marginTop: 10, fontSize: 11.5, color: Palette.ink3, lineHeight: 1.7 }}>
-          このほか、{alternativePlans.map((p) => p.name).join(" / ")} プランも、
-          医師が確認する処方内容によっては候補になります。
-        </div>
+      {primary ? (
+        <>
+          <div style={{ fontSize: 11.5, color: Palette.ink3, marginTop: 14 }}>あなたが優先して相談したいテーマ</div>
+          <h1 className="serif" style={{ fontSize: 24, color: Palette.roseDeep, lineHeight: 1.5, margin: "4px 0 0", letterSpacing: 0.02 }}>
+            {primary.title}
+          </h1>
+          <p style={{ fontSize: 12.5, color: Palette.ink2, lineHeight: 1.85, marginTop: 8 }}>
+            回答内容から、{primary.resultFocus}に関する項目が比較的多く見られました。
+          </p>
+          {secondary && (
+            <div
+              style={{
+                marginTop: 10,
+                padding: "10px 12px",
+                background: "#fff",
+                border: `0.5px solid ${Palette.line}`,
+                borderRadius: 10,
+              }}
+            >
+              <div style={{ fontSize: 10.5, color: Palette.ink3 }}>あわせて気になるテーマ</div>
+              <div className="serif" style={{ fontSize: 14.5, color: Palette.ink, marginTop: 2 }}>{secondary.title}</div>
+            </div>
+          )}
+        </>
+      ) : (
+        <>
+          <h1 className="serif" style={{ fontSize: 21, color: Palette.ink, lineHeight: 1.55, margin: "12px 0 0" }}>
+            特定のテーマへの偏りは見られませんでした
+          </h1>
+          <p style={{ fontSize: 12.5, color: Palette.ink2, lineHeight: 1.85, marginTop: 8 }}>
+            気になっていることがあれば、そのまま医師にご相談ください。
+          </p>
+        </>
       )}
 
-      {medicineCandidates.length > 0 && (
+      <div style={{ marginTop: 16 }}>
+        <LevelCard level={result.level} />
+      </div>
+
+      <div style={{ marginTop: 12 }}>
+        <ScoreBars scores={result.scores} />
+      </div>
+
+      {primary && primary.medicines.length > 0 && (
         <div style={{ marginTop: 22 }}>
           <SectionHead
             kicker="Examples"
@@ -527,14 +565,14 @@ function Result({
             sub="医師が体質や症状、既往歴・服薬状況を確認したうえで処方を判断します。下記は一例で、必ずしも処方されるものではありません。"
           />
           <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-            {medicineCandidates.map((m) => (
+            {primary.medicines.slice(0, 3).map((m) => (
               <MedicineCard key={m.id} m={m} compact onClick={() => go("detail", m.id)} />
             ))}
           </div>
         </div>
       )}
 
-      {cautions.length > 0 && (
+      {result.cautions.length > 0 && (
         <div
           style={{
             marginTop: 18,
@@ -549,19 +587,43 @@ function Result({
         >
           以下に該当する方は、診療時に医師へお伝えください。
           <ul style={{ margin: "6px 0 0", padding: "0 0 0 18px" }}>
-            {cautions.map((c, i) => (
+            {result.cautions.map((c, i) => (
               <li key={i}>{c}</li>
             ))}
           </ul>
         </div>
       )}
 
-      <div style={{ marginTop: 22, display: "flex", flexDirection: "column", gap: 10 }}>
-        <CTA variant="rose" onClick={() => go("order")}>
-          オンライン診療を申し込む
+      <div
+        style={{
+          marginTop: 18,
+          padding: "12px 14px",
+          background: Palette.paper2,
+          border: `0.5px solid ${Palette.line}`,
+          borderRadius: 10,
+          fontSize: 11.5,
+          color: Palette.ink2,
+          lineHeight: 1.75,
+        }}
+      >
+        ご相談は{TRIAL_PLAN.name}（月額{TRIAL_PLAN.price.toLocaleString()}円・税込）で承ります。
+        <div style={{ fontSize: 10.5, color: Palette.ink3, marginTop: 4 }}>{CONSULTATION_ONLY_FEE_INLINE}</div>
+      </div>
+
+      <div style={{ marginTop: 18, display: "flex", flexDirection: "column", gap: 10 }}>
+        <CTA
+          variant="rose"
+          onClick={() =>
+            go("order", undefined, {
+              concern: result.primaryConcern,
+              concern2: result.secondaryConcern,
+            })
+          }
+        >
+          この悩みを医師に相談する
         </CTA>
         <CTA variant="ghost" onClick={() => go("pricing")}>
-          料金プランを見る
+          お試しプランを見る
         </CTA>
         <CTA variant="ghost" onClick={onRestart}>
           もう一度やり直す
@@ -579,7 +641,7 @@ function Result({
           lineHeight: 1.75,
         }}
       >
-        本チェックの結果は診断ではありません。実際の処方可否は、医師の診療によって判断されます。
+        本チェックの結果は診断ではありません。医療用漢方が適しているかどうか、実際に処方できるかどうかは、医師が診療のうえ判断します。
       </div>
     </div>
   );

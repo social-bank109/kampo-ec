@@ -1,7 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Noto_Sans_JP, Noto_Serif_JP, JetBrains_Mono } from "next/font/google";
 import { Analytics } from "@vercel/analytics/next";
-import { BRAND, PRICE_RANGE_LABEL } from "@/components/data";
+import { BRAND, CURRENT_PRICE_LABEL } from "@/components/data";
 import "./globals.css";
 
 const sans = Noto_Sans_JP({
@@ -24,7 +24,7 @@ const mono = JetBrains_Mono({
 });
 
 const SITE_TITLE = `VISTA Wellness — ${BRAND.tagline}`;
-const SITE_DESCRIPTION = `${BRAND.subtagline} 自由診療・${PRICE_RANGE_LABEL}。`;
+const SITE_DESCRIPTION = `${BRAND.subtagline} 自由診療・${CURRENT_PRICE_LABEL}。`;
 
 export const metadata: Metadata = {
   title: {

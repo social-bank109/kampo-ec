@@ -1,7 +1,14 @@
 "use client";
 import React from "react";
 import { Palette, AppBar, Badge, CTA, SectionHead, ContinuityCards, SafetyNotes, Footer } from "./ui";
-import { LINE_ADD_FRIEND_URL, PRICE_RANGE_LABEL, CONSULTATION_ONLY_FEE, CONSULTATION_ONLY_FEE_INLINE } from "./data";
+import {
+  LINE_ADD_FRIEND_URL,
+  TRIAL_PLAN,
+  TRIAL_PRICE_LABEL,
+  CONSULTATION_ONLY_FEE,
+  CONSULTATION_ONLY_FEE_INLINE,
+  findConcern,
+} from "./data";
 import type { Go } from "./navigation";
 
 type AckId = "freedom" | "tax" | "doctor" | "side" | "emergency";
@@ -23,6 +30,15 @@ export default function ScreenConsult({ go }: { go: Go }) {
   });
   const allAcked = ACKS.every((a) => acks[a.id]);
 
+  // 体質チェック結果・主訴カードから引き継いだ相談テーマ（?concern=...&concern2=...）
+  const [topics, setTopics] = React.useState<{ primary?: string; secondary?: string }>({});
+  React.useEffect(() => {
+    const q = new URLSearchParams(window.location.search);
+    const primary = findConcern(q.get("concern"))?.title;
+    const secondary = findConcern(q.get("concern2"))?.title;
+    setTopics({ primary, secondary: secondary !== primary ? secondary : undefined });
+  }, []);
+
   return (
     <div style={{ background: Palette.paper, minHeight: "100%" }}>
       <AppBar title="相談する" variant="paper" onBack={() => go("top")} />
@@ -41,7 +57,51 @@ export default function ScreenConsult({ go }: { go: Go }) {
         </p>
       </div>
 
-      <section style={{ margin: "20px 16px", padding: "18px 18px", background: "#fff", borderRadius: 16, border: `0.5px solid ${Palette.line}` }}>
+      {topics.primary && (
+        <section
+          style={{
+            margin: "20px 16px 0",
+            padding: "16px 16px",
+            background: Palette.roseTint,
+            border: `0.5px solid #e6cfd6`,
+            borderRadius: 16,
+          }}
+        >
+          <div style={{ fontSize: 11, color: Palette.ink3 }}>ご相談予定のテーマ</div>
+          <div className="serif" style={{ fontSize: 17, color: Palette.roseDeep, marginTop: 2 }}>{topics.primary}</div>
+          {topics.secondary && (
+            <div style={{ fontSize: 12, color: Palette.ink2, marginTop: 4 }}>あわせて：{topics.secondary}</div>
+          )}
+          <div style={{ fontSize: 11.5, color: Palette.ink2, marginTop: 8, lineHeight: 1.75 }}>
+            LINEの友だち追加後、問診で「{topics.primary}
+            {topics.secondary ? `・${topics.secondary}` : ""}について相談したい」とお伝えください。
+          </div>
+        </section>
+      )}
+
+      <section
+        style={{
+          margin: "20px 16px",
+          padding: "16px 16px",
+          background: "#fff",
+          borderRadius: 16,
+          border: `1px solid ${Palette.roseDeep}`,
+        }}
+      >
+        <div style={{ fontSize: 11, color: Palette.ink3 }}>ご利用いただくプラン</div>
+        <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", gap: 8, flexWrap: "wrap", marginTop: 2 }}>
+          <div className="serif" style={{ fontSize: 17, color: Palette.ink }}>{TRIAL_PLAN.name}</div>
+          <div style={{ display: "flex", alignItems: "baseline", gap: 3 }}>
+            <span className="serif" style={{ fontSize: 22, color: Palette.ink }}>¥{TRIAL_PLAN.price.toLocaleString()}</span>
+            <span style={{ fontSize: 11, color: Palette.ink3 }}>/ 月（税込）</span>
+          </div>
+        </div>
+        <div style={{ fontSize: 11.5, color: Palette.ink2, marginTop: 6, lineHeight: 1.75 }}>
+          サービス開始初期は{TRIAL_PLAN.name}の1プランのみでご案内しています。料金プランを選ぶ必要はありません。
+        </div>
+      </section>
+
+      <section style={{ margin: "0 16px 20px", padding: "18px 18px", background: "#fff", borderRadius: 16, border: `0.5px solid ${Palette.line}` }}>
         <SectionHead kicker="Continuity" title="継続しやすい診療・配送設計" />
         <ContinuityCards />
       </section>
@@ -99,7 +159,7 @@ export default function ScreenConsult({ go }: { go: Go }) {
           先に体質チェックをする
         </CTA>
         <CTA variant="ghost" onClick={() => go("pricing")}>
-          料金プランを見る
+          お試しプランを見る
         </CTA>
       </div>
 
@@ -113,7 +173,11 @@ export default function ScreenConsult({ go }: { go: Go }) {
             },
             {
               q: "自由診療とのことですが、保険は使えますか？",
-              a: `本サービスは自由診療のため、公的医療保険は適用されません。料金は${PRICE_RANGE_LABEL}で、お悩みや医師が判断する処方内容に応じて4プランをご用意しています。なお、医師の診察の結果、漢方薬を処方しない判断となった場合は診察料${CONSULTATION_ONLY_FEE.toLocaleString()}円（税込）がかかります。`,
+              a: `本サービスは自由診療のため、公的医療保険は適用されません。料金は${TRIAL_PRICE_LABEL}です。なお、医師の診察の結果、漢方薬を処方しない判断となった場合は診察料${CONSULTATION_ONLY_FEE.toLocaleString()}円（税込）がかかります。`,
+            },
+            {
+              q: "どのプランを選べばいいですか？",
+              a: `現在はサービス開始初期のため、お試しプラン${TRIAL_PLAN.price.toLocaleString()}円（税込）の1プランでご案内しています。プランを選んでいただく必要はなく、どんな悩みを相談したいかをお伝えいただければ、医師が症状・体質・既往歴・服薬状況等を確認して判断します。なお、今後はライト・ベーシック・スタンダード・集中ケアの4プランへ順次拡充する予定です。`,
             },
             {
               q: "強い薬が出ることはありますか？",

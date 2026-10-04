@@ -18,7 +18,45 @@ export const BRAND = {
 export const LINE_ADD_FRIEND_URL = "https://lin.ee/yn4fg0L";
 
 // ─────────────────────────────────────────────────────────────
-// プラン（すべて税込表示）
+// サービスフェーズ
+//
+//   trial … サービス開始初期。お試しプラン1つのみ提供し、
+//           4プランは「今後のプラン展開」として補足表示のみ
+//   full  … 4プラン（ライト〜集中ケア）を料金表として表示
+//
+// 4プランへ拡充する際は CURRENT_SERVICE_PHASE を "full" に変更してください。
+// ─────────────────────────────────────────────────────────────
+export type ServicePhase = "trial" | "full";
+export const CURRENT_SERVICE_PHASE: ServicePhase = "trial";
+export const IS_TRIAL_PHASE = (CURRENT_SERVICE_PHASE as ServicePhase) === "trial";
+
+// ─────────────────────────────────────────────────────────────
+// お試しプラン（trial フェーズで提供する唯一のプラン）
+// ─────────────────────────────────────────────────────────────
+export const TRIAL_PLAN = {
+  id: "trial",
+  name: "お試しプラン",
+  /** 月額・税込 */
+  price: 6980,
+  contents: [
+    "医師によるオンライン診療",
+    "医療用漢方1剤",
+    "初回30日分",
+    "継続時は原則90日分をまとめて処方・発送",
+  ],
+  note: "PMS・更年期、睡眠、不安・緊張、むくみ、冷え、産後の体調など、幅広い悩みをご相談いただけます。",
+  positioning:
+    "初めて医療用漢方を相談する方にも分かりやすいよう、サービス開始初期は1つのプランからスタートします。",
+  ctaLabel: "お試しプランで相談する",
+};
+
+/** 現在提供中の料金の表示（metadata・FAQ 等で使用） */
+export const TRIAL_PRICE_LABEL = `${TRIAL_PLAN.name} 月額${TRIAL_PLAN.price.toLocaleString()}円（税込）`;
+
+// ─────────────────────────────────────────────────────────────
+// 将来提供予定の4プラン（full フェーズで料金表として表示）
+// trial フェーズではプラン名のみ「今後のプラン展開」として補足表示し、
+// 価格・内容は表示しません。
 // ─────────────────────────────────────────────────────────────
 export type PlanId = "light" | "basic" | "standard" | "intensive";
 
@@ -115,8 +153,15 @@ export const PRICE_NOTES = [
   "自由診療のため、公的医療保険は適用されません。",
 ];
 
-/** 料金レンジ（各種文言で使い回す） */
+/** 4プランの料金レンジ（full フェーズ用） */
 export const PRICE_RANGE_LABEL = `月額${PLANS[0].price.toLocaleString()}円〜${PLANS[PLANS.length - 1].price.toLocaleString()}円（税込）`;
+
+/** 現在のフェーズにおける料金表示 */
+export const CURRENT_PRICE_LABEL = IS_TRIAL_PHASE ? TRIAL_PRICE_LABEL : PRICE_RANGE_LABEL;
+
+/** 今後のプラン展開（trial フェーズの補足表示用。価格は出さない） */
+export const FUTURE_PLAN_NOTE =
+  "VISTA Wellnessでは、今後サービスの拡充に合わせて、以下の4プランを順次提供予定です。";
 
 // ─────────────────────────────────────────────────────────────
 // 漢方マスタ
@@ -446,39 +491,55 @@ export const STANDARD_PRESCRIPTIONS: StandardPrescription[] = [
 export type Concern = {
   id: ConcernId;
   title: string;
+  /** チップ・カード内などで使う短い表記 */
+  shortTitle: string;
   description: string;
+  /** 体質チェック結果の説明に使う「どんな項目が多かったか」 */
+  resultFocus: string;
 };
 
 const CONCERN_BASE: Concern[] = [
   {
     id: "pms_meno",
     title: "PMS・更年期のゆらぎ",
+    shortTitle: "PMS・更年期",
     description: "月経前や更年期のイライラ・気分のゆらぎ・のぼせ",
+    resultFocus: "月経前後や更年期にともなうゆらぎ・のぼせ",
   },
   {
     id: "sleep",
     title: "睡眠の悩み",
+    shortTitle: "睡眠",
     description: "寝つきが悪い・眠りが浅い・夜中に目が覚める",
+    resultFocus: "寝つき・眠りの浅さ・疲れの残りやすさ",
   },
   {
     id: "anxiety",
     title: "不安・緊張・イライラ",
+    shortTitle: "不安・緊張",
     description: "気持ちが張りつめる・のどのつかえ・気の高ぶり",
+    resultFocus: "不安感・緊張感・気持ちの高ぶり",
   },
   {
     id: "edema",
     title: "むくみ・便秘・重だるさ",
+    shortTitle: "むくみ・便秘",
     description: "むくみ・身体の重だるさ・便秘やお腹まわりの悩み",
+    resultFocus: "むくみ・便秘・身体の重だるさ",
   },
   {
     id: "circulation",
     title: "冷え・のぼせ・巡り",
+    shortTitle: "冷え・巡り",
     description: "手足の冷え・冷えとのぼせ・月経に伴う不調",
+    resultFocus: "冷え・のぼせ・巡り",
   },
   {
     id: "postpartum",
     title: "産後のこころと体の相談",
+    shortTitle: "産後の体調",
     description: "産後の疲労感・気分のゆらぎ・睡眠不足",
+    resultFocus: "産後の疲労感・気分のゆらぎ",
   },
 ];
 
@@ -509,6 +570,19 @@ export const CONCERNS: (Concern & { plans: PlanId[]; medicines: Medicine[] })[] 
     medicines: medicinesForConcern(c.id),
   }));
 
+export function findConcern(id: string | null | undefined) {
+  return CONCERNS.find((c) => c.id === id);
+}
+
+/** 漢方が代表処方として登場する相談テーマ（標準処方表から導出） */
+export function concernsForMedicine(medicineId: string): Concern[] {
+  const ids: ConcernId[] = [];
+  for (const s of STANDARD_PRESCRIPTIONS) {
+    if (s.medicineIds.includes(medicineId) && !ids.includes(s.concern)) ids.push(s.concern);
+  }
+  return CONCERN_BASE.filter((c) => ids.includes(c.id));
+}
+
 // ─────────────────────────────────────────────────────────────
 // 診療・配送フロー
 // ─────────────────────────────────────────────────────────────
@@ -538,30 +612,53 @@ export const TREATMENT_FLOW = [
 export const HOW_IT_WORKS = [
   {
     n: "01",
-    title: "体質チェック",
-    body: "2分ほどの質問で、いまの悩みや体質、服薬状況を整理します。",
+    title: "体質チェックで悩みを整理",
+    body: "いくつかの質問に答えて、いまの体調と、医師にいちばん相談したいテーマを整理します。",
   },
   {
     n: "02",
     title: "オンライン診療",
-    body: "提携クリニックの医師が、症状・既往歴・現在の服薬状況を確認し、処方の可否を判断します。",
+    body: "提携クリニックの医師が、症状・体質・既往歴・現在の服薬状況を確認します。",
   },
   {
     n: "03",
-    title: "処方・お届け",
-    body: "医師が必要と判断した場合、初回は原則30日分の医療用漢方を処方し、ご自宅へお届けします。",
+    title: "医師が処方を判断",
+    body: "医療用漢方が適しているか、処方できるかどうかを医師が個別に判断します。",
   },
   {
     n: "04",
-    title: "継続フォロー",
-    body: "約1か月後に再診し、効果・副作用・体調変化を確認します。問題なく継続できる場合は、その後は原則3か月ごとの診察・90日分のまとめ配送に移行します。",
+    title: "お試しプランで30日分",
+    body: "医師が必要と判断した場合、初回は原則30日分の医療用漢方を処方し、ご自宅へお届けします。",
+  },
+  {
+    n: "05",
+    title: "約1か月後に再診",
+    body: "効果・副作用・体調変化を確認し、継続の可否や処方内容を見直します。",
+  },
+  {
+    n: "06",
+    title: "継続時は90日分",
+    body: "問題なく継続できる場合は、その後は原則3か月ごとに診察し、90日分をまとめて処方・発送します。",
   },
 ];
 
 // ─────────────────────────────────────────────────────────────
-// 体質チェック（5問）
-// 結果はプラン候補 + 代表処方の例（断定しない）+ 安全確認による受診案内
+// 体質チェック
+//
+// 料金プランを判定するものではありません。回答から
+//   1. 漢方によるケアを医師へ相談する余地がありそうか（目安の3段階）
+//   2. 6つの相談テーマのうち、どれを優先して相談するとよいか
+// を整理するためのセルフチェックです。
+//
+// 各回答は ConcernScores に加点し、最高点のテーマを primaryConcern、
+// 次点を secondaryConcern として返します。安全確認で該当があれば
+// safetyFlag を立て、主訴の提示より医療機関への相談案内を優先します。
 // ─────────────────────────────────────────────────────────────
+export type ConcernScores = Record<ConcernId, number>;
+type ConcernWeights = Partial<ConcernScores>;
+
+export type WeightedOption = { label: string; w: ConcernWeights };
+
 export type Q1Id = ConcernId | "other";
 
 export const Q1_OPTIONS: { id: Q1Id; label: string }[] = [
@@ -571,144 +668,168 @@ export const Q1_OPTIONS: { id: Q1Id; label: string }[] = [
   { id: "edema", label: "むくみ・便秘・重だるさ" },
   { id: "circulation", label: "冷え・のぼせ・巡り" },
   { id: "postpartum", label: "産後のこころと体の不調" },
-  { id: "other", label: "その他" },
+  { id: "other", label: "その他・まだ分からない" },
 ];
 
-export const Q2_OPTIONS = [
-  "イライラしやすい",
-  "不安感がある",
-  "寝つきが悪い",
-  "夜中に目が覚める",
-  "疲れやすい",
-  "冷えやすい",
-  "のぼせる",
-  "むくみやすい",
-  "便秘がち",
-  "のどのつかえ感がある",
-  "食欲が乱れる",
-  "肌の乾燥が気になる",
-] as const;
+/** Q1 で選んだテーマへの加点 */
+const Q1_WEIGHT = 3;
 
-export const Q3_OPTIONS = [
-  "体力はある方",
-  "疲れやすい",
-  "冷えやすい",
-  "汗をかきやすい",
-  "胃腸が弱い",
-  "便秘がち",
-  "下痢しやすい",
-  "むくみやすい",
-] as const;
+/** Q2 現在の症状（複数選択） */
+export const Q2_OPTIONS: WeightedOption[] = [
+  { label: "生理前や生理中に、心身の調子が崩れやすい", w: { pms_meno: 2 } },
+  { label: "急なほてり・発汗がある", w: { pms_meno: 2, circulation: 1 } },
+  { label: "イライラしやすい", w: { anxiety: 1, pms_meno: 1 } },
+  { label: "不安感がある", w: { anxiety: 2 } },
+  { label: "のどのつかえ感がある", w: { anxiety: 2 } },
+  { label: "寝つきが悪い", w: { sleep: 2 } },
+  { label: "夜中に目が覚める", w: { sleep: 2 } },
+  { label: "疲れやすい", w: { sleep: 1, postpartum: 1 } },
+  { label: "冷えやすい", w: { circulation: 2 } },
+  { label: "のぼせる", w: { circulation: 1, pms_meno: 1 } },
+  { label: "むくみやすい", w: { edema: 2 } },
+  { label: "便秘がち", w: { edema: 2 } },
+  { label: "食欲が乱れる", w: { anxiety: 1 } },
+  { label: "肌の乾燥が気になる", w: { circulation: 1 } },
+  { label: "産後、疲れや気分のゆらぎが続いている", w: { postpartum: 3 } },
+  { label: "特に当てはまるものはない", w: {} },
+];
 
-// Q4 安全確認（はい/いいえ）
-//   danger  … 上位プランへの誘導ではなく、他医療機関への受診案内を優先する
+/** Q3 体質（複数選択） */
+export const Q3_OPTIONS: WeightedOption[] = [
+  { label: "体力はある方", w: {} },
+  { label: "疲れやすい", w: { sleep: 1, postpartum: 1 } },
+  { label: "冷えやすい", w: { circulation: 2 } },
+  { label: "汗をかきやすい", w: { edema: 1 } },
+  { label: "胃腸が弱い", w: { anxiety: 1 } },
+  { label: "便秘がち", w: { edema: 2 } },
+  { label: "下痢しやすい", w: { anxiety: 1 } },
+  { label: "むくみやすい", w: { edema: 2 } },
+];
+
+/** Q4 生活への影響（単一選択） */
+export type ImpactId = "mild" | "sometimes" | "daily";
+export const IMPACT_OPTIONS: { id: ImpactId; label: string }[] = [
+  { id: "mild", label: "少し気になる程度" },
+  { id: "sometimes", label: "ときどき困ることがある" },
+  { id: "daily", label: "ほぼ毎日つらさを感じる" },
+];
+
+// Q5 安全確認（はい/いいえ）
+//   danger  … safetyFlag を立て、主訴の提示より医療機関への相談案内を優先
 //   caution … 診療時に医師へ申告いただく項目
-export type Q4Item = {
+export type SafetyItem = {
   id: string;
   label: string;
   danger?: boolean;
   caution?: boolean;
 };
 
-export const Q4_ITEMS: Q4Item[] = [
+export const SAFETY_ITEMS: SafetyItem[] = [
+  { id: "suicide", label: "死にたい気持ちがある", danger: true },
+  { id: "selfharm", label: "自分を傷つけたい気持ちがある", danger: true },
+  { id: "depression", label: "強い抑うつ気分が続いている", danger: true },
+  { id: "panic", label: "激しい不安やパニックのような発作がある", danger: true },
+  { id: "insomnia_severe", label: "ほとんど眠れない日が続いている", danger: true },
+  { id: "daily_life", label: "不調のため、仕事・家事など日常生活に大きな支障が出ている", danger: true },
+  { id: "postpartum_strong", label: "産後で、強い不安や落ち込み・眠れなさが続いている", danger: true },
+  { id: "chest", label: "胸の痛みや息苦しさがある", danger: true },
+  { id: "acute", label: "不正出血・強い痛み・発熱など、急な症状がある", danger: true },
+  { id: "eating", label: "食事を極端に制限している、または過食・嘔吐がある", danger: true },
   { id: "pregnant", label: "妊娠中、または妊娠の可能性がある", danger: true },
   { id: "lactating", label: "授乳中である", danger: true },
   { id: "treating", label: "現在、医療機関で治療中の病気がある", caution: true },
   { id: "medication", label: "現在、服用中の薬がある", caution: true },
   { id: "allergy", label: "薬や食品でアレルギーが出たことがある", caution: true },
-  { id: "depression", label: "強い抑うつ気分がある", danger: true },
-  { id: "suicide", label: "死にたい気持ちがある", danger: true },
-  { id: "eating", label: "食事を極端に制限している、または過食・嘔吐がある", danger: true },
-  { id: "postpartum_strong", label: "産後で強い不安や眠れなさが続いている", danger: true },
-];
-
-export type Q5Id = "cheap" | "single" | "sleep_stress" | "multi" | "doctor";
-
-export const Q5_OPTIONS: { id: Q5Id; label: string }[] = [
-  { id: "cheap", label: "できるだけ安く始めたい" },
-  { id: "single", label: "まずは1種類で相談したい" },
-  { id: "sleep_stress", label: "睡眠やストレスも含めて相談したい" },
-  { id: "multi", label: "複数の悩みをまとめて相談したい" },
-  { id: "doctor", label: "医師に任せたい" },
 ];
 
 export type CheckAnswers = {
   q1?: Q1Id;
   q2?: number[];
   q3?: number[];
-  q4?: Record<string, boolean>;
-  q5?: Q5Id;
+  impact?: ImpactId;
+  safety?: Record<string, boolean>;
 };
 
-export type CheckResult = {
-  concern?: Concern & { plans: PlanId[]; medicines: Medicine[] };
-  primaryPlan: Plan;
-  alternativePlans: Plan[];
-  medicineCandidates: Medicine[];
-  /** Q4 caution（診療時に申告いただく項目） */
+/** 漢方相談の目安（断定しない3段階） */
+export type ConsultLevel = "consider" | "recommend" | "refer";
+
+export const CONSULT_LEVELS: Record<ConsultLevel, { title: string; body: string }> = {
+  consider: {
+    title: "相談してみてもよさそう",
+    body: "日常的な体調のゆらぎについて、医療用漢方を含め医師に相談してみてもよい状態と考えられます。",
+  },
+  recommend: {
+    title: "医師への相談をおすすめ",
+    body: "複数の症状が重なっているため、自己判断ではなく医師に相談することをおすすめします。",
+  },
+  refer: {
+    title: "他の医療機関の受診も検討",
+    body: "強い症状やレッドフラッグに該当する回答がある場合は、漢方のオンライン診療だけでなく、対面診療や専門医療機関への相談もご検討ください。",
+  },
+};
+
+export type ConstitutionCheckResult = {
+  scores: ConcernScores;
+  /** いちばん相談をおすすめするテーマ（加点が無い場合は undefined） */
+  primaryConcern?: ConcernId;
+  /** あわせて気になるテーマ */
+  secondaryConcern?: ConcernId;
+  /** 安全確認で該当があった場合 true（医療機関への相談案内を優先） */
+  safetyFlag: boolean;
+  safetyItems: string[];
+  /** 診療時に医師へ申告いただく項目 */
   cautions: string[];
-  /** Q4 danger（他医療機関への受診案内を優先する項目） */
-  dangerSigns: string[];
-  hasDanger: boolean;
+  level: ConsultLevel;
 };
 
-export function evaluateAnswers(answers: CheckAnswers): CheckResult {
-  const dangerSigns: string[] = [];
+/** 第2テーマとして表示する最低スコア */
+const SECONDARY_MIN_SCORE = 2;
+
+function emptyScores(): ConcernScores {
+  return { pms_meno: 0, sleep: 0, anxiety: 0, edema: 0, circulation: 0, postpartum: 0 };
+}
+
+function addWeights(scores: ConcernScores, w: ConcernWeights) {
+  for (const k of Object.keys(w) as ConcernId[]) scores[k] += w[k] ?? 0;
+}
+
+export function evaluateAnswers(answers: CheckAnswers): ConstitutionCheckResult {
+  const scores = emptyScores();
+
+  if (answers.q1 && answers.q1 !== "other") scores[answers.q1] += Q1_WEIGHT;
+  for (const i of answers.q2 ?? []) addWeights(scores, Q2_OPTIONS[i]?.w ?? {});
+  for (const i of answers.q3 ?? []) addWeights(scores, Q3_OPTIONS[i]?.w ?? {});
+
+  // 同点の場合は Q1 で選んだテーマ → 一覧の並び順の順で優先
+  const order = CONCERN_BASE.map((c) => c.id);
+  const ranked = [...order].sort((a, b) => {
+    if (scores[b] !== scores[a]) return scores[b] - scores[a];
+    if (a === answers.q1) return -1;
+    if (b === answers.q1) return 1;
+    return order.indexOf(a) - order.indexOf(b);
+  });
+  const primaryConcern = scores[ranked[0]] > 0 ? ranked[0] : undefined;
+  const secondaryConcern =
+    primaryConcern && scores[ranked[1]] >= SECONDARY_MIN_SCORE ? ranked[1] : undefined;
+
+  const safetyItems: string[] = [];
   const cautions: string[] = [];
-  if (answers.q4) {
-    for (const item of Q4_ITEMS) {
-      if (!answers.q4[item.id]) continue;
-      if (item.danger) dangerSigns.push(item.label);
-      else if (item.caution) cautions.push(item.label);
-    }
+  for (const item of SAFETY_ITEMS) {
+    if (!answers.safety?.[item.id]) continue;
+    if (item.danger) safetyItems.push(item.label);
+    else if (item.caution) cautions.push(item.label);
   }
+  const safetyFlag = safetyItems.length > 0;
 
-  const q1 = answers.q1 ?? "other";
-  const concern = q1 === "other" ? undefined : CONCERNS.find((c) => c.id === q1);
+  // 目安の判定。症状が重なっているほど「医師への相談をおすすめ」に寄せるが、
+  // 料金・プランとは連動させない。
+  const symptomCount = (answers.q2 ?? []).filter((i) => Object.keys(Q2_OPTIONS[i]?.w ?? {}).length > 0).length;
+  const strongThemes = order.filter((id) => scores[id] >= 3).length;
+  let level: ConsultLevel = "consider";
+  if (safetyFlag) level = "refer";
+  else if (answers.impact === "daily" || symptomCount >= 5 || strongThemes >= 2) level = "recommend";
 
-  // 主訴に対応するプラン範囲。主訴が「その他」の場合は全プランを候補とする。
-  const range = concern && concern.plans.length > 0 ? concern.plans : PLAN_ORDER;
-
-  // ご希望の進め方（Q5）から、対応プラン範囲のどこをご案内するかを決める。
-  // 症状の重さでプランを上げる設計にはしない。
-  let planId: PlanId;
-  switch (answers.q5) {
-    case "multi":
-      planId = range[range.length - 1];
-      break;
-    case "sleep_stress":
-      planId = range[Math.min(1, range.length - 1)];
-      break;
-    case "cheap":
-    case "single":
-    case "doctor":
-    default:
-      planId = range[0];
-      break;
-  }
-
-  const primaryPlan = PLANS.find((p) => p.id === planId) ?? PLANS[1];
-  const alternativePlans = range
-    .filter((id) => id !== planId)
-    .map((id) => PLANS.find((p) => p.id === id))
-    .filter((p): p is Plan => Boolean(p));
-
-  // 代表処方の例：主訴に紐づくもののうち、ご案内するプランのものを優先して表示
-  const forPlan = concern
-    ? concern.medicines.filter((m) => m.plans.includes(planId))
-    : [];
-  const rest = concern ? concern.medicines.filter((m) => !forPlan.includes(m)) : [];
-  const medicineCandidates = [...forPlan, ...rest].slice(0, 3);
-
-  return {
-    concern,
-    primaryPlan,
-    alternativePlans,
-    medicineCandidates,
-    cautions,
-    dangerSigns,
-    hasDanger: dangerSigns.length > 0,
-  };
+  return { scores, primaryConcern, secondaryConcern, safetyFlag, safetyItems, cautions, level };
 }
 
 // ─────────────────────────────────────────────────────────────

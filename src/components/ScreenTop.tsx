@@ -1,6 +1,6 @@
 "use client";
 import React from "react";
-import { BRAND, MEDICINES, MEDICINE_SECTION_NOTE, PLANS } from "./data";
+import { BRAND, MEDICINES, MEDICINE_SECTION_NOTE, TRIAL_PLAN } from "./data";
 import {
   Palette,
   Badge,
@@ -102,13 +102,42 @@ export default function ScreenTop({ go }: { go: Go }) {
             <Badge tone="paper">継続処方</Badge>
             <Badge tone="paper">自宅へお届け</Badge>
           </div>
-          <div style={{ display: "flex", gap: 8, marginTop: 18, flexWrap: "wrap" }}>
+          {/* お試しプラン：サービス開始初期は1プランのみ */}
+          <div
+            style={{
+              marginTop: 18,
+              padding: "14px 16px",
+              background: "rgba(255,255,255,0.78)",
+              border: `0.5px solid #e6cfd6`,
+              borderRadius: 14,
+            }}
+          >
+            <div className="serif" style={{ fontSize: 16, color: Palette.ink, lineHeight: 1.5 }}>
+              まずは、お試しプランから。
+            </div>
+            <div style={{ display: "flex", alignItems: "baseline", gap: 4, marginTop: 4 }}>
+              <span className="serif" style={{ fontSize: 26, color: Palette.roseDeep, fontWeight: 500 }}>
+                ¥{TRIAL_PLAN.price.toLocaleString()}
+              </span>
+              <span style={{ fontSize: 11, color: Palette.ink3 }}>/ 月（税込）</span>
+            </div>
+            <div style={{ fontSize: 12, color: Palette.ink2, lineHeight: 1.75, marginTop: 4 }}>
+              月額{TRIAL_PLAN.price.toLocaleString()}円（税込）で、医師に相談しながら医療用漢方を始められます。
+            </div>
+            <div style={{ fontSize: 11.5, color: Palette.ink, lineHeight: 1.7, marginTop: 6, fontWeight: 500 }}>
+              サービス開始初期は「お試しプラン」の1プランのみでご案内しています。
+            </div>
+            <div style={{ fontSize: 10.5, color: Palette.ink3, lineHeight: 1.7, marginTop: 4 }}>
+              今後、ライト・ベーシック・スタンダード・集中ケアの4プランへ順次拡充予定です。
+            </div>
+          </div>
+          <div style={{ display: "flex", gap: 8, marginTop: 16, flexWrap: "wrap" }}>
             <CTA small full={false} variant="rose" onClick={() => go("check")}>
               体質チェックをはじめる
               <Arrow />
             </CTA>
             <CTA small full={false} variant="ghost" onClick={() => go("pricing")}>
-              料金プランを見る
+              お試しプランを見る
             </CTA>
           </div>
         </div>
@@ -136,8 +165,9 @@ export default function ScreenTop({ go }: { go: Go }) {
               d: "医療機関で用いられる漢方エキス製剤を、オンライン診療後にご自宅へ。初回は原則30日分、継続後は3か月ごとの診察・90日分のまとめ配送に移行します。",
             },
             {
-              t: `月額${PLANS[0].price.toLocaleString()}円から始められる`,
-              d: "ライト、ベーシック、スタンダード、集中ケアの4プラン。お悩みや医師が判断する処方内容に応じて、適切なプランをご案内します。",
+              t: `お試しプラン ${TRIAL_PLAN.price.toLocaleString()}円／月（税込）`,
+              d: "サービス開始初期は、料金体系をシンプルにし、お試しプラン1つからスタートします。症状・体質・既往歴・服薬状況等を医師が確認し、必要に応じて医療用漢方を処方します。",
+              note: "将来的には4つの診療プランへ拡充予定です。",
             },
           ].map((x, i) => (
             <div key={i} style={{ display: "flex", gap: 10, alignItems: "flex-start" }}>
@@ -164,6 +194,9 @@ export default function ScreenTop({ go }: { go: Go }) {
                   {x.t}
                 </div>
                 <div style={{ fontSize: 11.5, color: Palette.ink3, marginTop: 2, lineHeight: 1.75 }}>{x.d}</div>
+                {"note" in x && x.note && (
+                  <div style={{ fontSize: 10.5, color: Palette.ink3, marginTop: 4, lineHeight: 1.7 }}>※{x.note}</div>
+                )}
               </div>
             </div>
           ))}
@@ -172,8 +205,12 @@ export default function ScreenTop({ go }: { go: Go }) {
 
       {/* Concern */}
       <section style={{ padding: "0 18px", marginBottom: 22 }}>
-        <SectionHead kicker="By concern" title="気になる悩みから相談する" />
-        <ConcernGrid onPick={() => go("check")} />
+        <SectionHead
+          kicker="By concern"
+          title="気になる悩みから相談する"
+          sub="料金プランを選ぶ必要はありません。医師に相談したいテーマを選んでください。"
+        />
+        <ConcernGrid onPick={(id) => go("order", undefined, { concern: id })} />
       </section>
 
       {/* Pricing */}
@@ -188,8 +225,8 @@ export default function ScreenTop({ go }: { go: Go }) {
       >
         <SectionHead
           kicker="Pricing"
-          title="続けやすい、4つの定期診療プラン"
-          sub="VISTA Wellnessでは、症状の重さや処方内容に応じて、4つの自由診療プランをご用意しています。初回は医師が体質・症状・服薬状況を確認し、必要に応じて医療用漢方を処方します。安定後は、まとめ配送により通院や受け取りの負担を抑えながら継続できます。"
+          title="まずは、お試しプランから"
+          sub="VISTA Wellnessはサービス開始初期、お試しプラン1つでご案内します。料金体系をシンプルにし、まずは医師に相談しながら医療用漢方を試していただける設計です。"
         />
         <PricingTable onSelect={() => go("order")} />
       </section>

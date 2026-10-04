@@ -6,16 +6,18 @@ import type { Go } from "./navigation";
 export default function ScreenPricing({ go }: { go: Go }) {
   return (
     <div style={{ background: Palette.paper, minHeight: "100%" }}>
-      <AppBar title="料金プラン" variant="paper" onBack={() => go("top")} />
+      <AppBar title="お試しプラン" variant="paper" onBack={() => go("top")} />
       <div style={{ padding: "22px 22px 0" }}>
-        <Badge>自由診療 · 定期診療プラン</Badge>
+        <Badge>自由診療 · お試しプラン</Badge>
         <h1 className="serif" style={{ fontSize: 22, color: Palette.ink, lineHeight: 1.55, margin: "12px 0 0", letterSpacing: 0.02 }}>
-          続けやすい、4つの定期診療プラン
+          まずは、お試しプランから
         </h1>
         <p style={{ fontSize: 12.5, color: Palette.ink2, lineHeight: 1.85, marginTop: 10 }}>
-          VISTA Wellnessでは、症状の重さや処方内容に応じて、4つの自由診療プランをご用意しています。
-          初回は医師が体質・症状・服薬状況を確認し、必要に応じて医療用漢方を処方します。
-          安定後は、まとめ配送により通院や受け取りの負担を抑えながら継続できます。
+          VISTA Wellnessはサービス開始初期、お試しプラン1つでご案内します。
+          料金体系をシンプルにし、まずは医師に相談しながら医療用漢方を試していただける設計です。
+        </p>
+        <p style={{ fontSize: 12, color: Palette.ink3, lineHeight: 1.8, marginTop: 6 }}>
+          料金プランを選ぶ必要はありません。どんな悩みを医師に相談したいかを整理して、オンライン診療をお受けください。
         </p>
       </div>
 
