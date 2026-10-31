@@ -23,7 +23,10 @@ const mono = JetBrains_Mono({
   display: "swap",
 });
 
-const SITE_TITLE = `VISTA Wellness — ${BRAND.tagline}`;
+/** Google Tag Manager のコンテナ ID */
+const GTM_ID = "GTM-T2DXVQVQ";
+
+const SITE_TITLE =`VISTA Wellness — ${BRAND.tagline}`;
 const SITE_DESCRIPTION = `${BRAND.subtagline} 自由診療・${CURRENT_PRICE_LABEL}。`;
 
 export const metadata: Metadata = {
@@ -57,6 +60,17 @@ export const viewport: Viewport = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="ja" className={`${sans.variable} ${serif.variable} ${mono.variable}`}>
+      <head>
+        {/* Google Tag Manager */}
+        <script async src={`https://www.googletagmanager.com/gtm.js?id=${GTM_ID}`} />
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());`,
+          }}
+        />
+      </head>
       <body>
         <div className="app-frame">{children}</div>
         <Analytics />
