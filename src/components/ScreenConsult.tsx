@@ -11,24 +11,17 @@ import {
 } from "./data";
 import type { Go } from "./navigation";
 
-type AckId = "freedom" | "tax" | "doctor" | "side" | "emergency";
-const ACKS: { id: AckId; label: string }[] = [
-  { id: "freedom", label: "自由診療であることを理解しました" },
-  { id: "tax", label: "表示価格はすべて税込であることを理解しました" },
-  { id: "doctor", label: "医師の判断により処方されない場合があることを理解しました" },
-  { id: "side", label: "副作用や体調変化がある場合は医師・薬剤師に相談します" },
-  { id: "emergency", label: "緊急性のある症状がある場合は、近隣の医療機関に相談します" },
+/** 相談前にご確認いただく事項（まとめて1つのチェックで同意） */
+const ACK_ITEMS = [
+  "本サービスは自由診療です（公的医療保険は適用されません）",
+  "表示価格はすべて税込です",
+  "医師の判断により、処方されない場合があります",
+  "副作用や体調変化がある場合は、医師・薬剤師にご相談ください",
+  "緊急性のある症状がある場合は、近隣の医療機関にご相談ください",
 ];
 
 export default function ScreenConsult({ go }: { go: Go }) {
-  const [acks, setAcks] = React.useState<Record<AckId, boolean>>({
-    freedom: false,
-    tax: false,
-    doctor: false,
-    side: false,
-    emergency: false,
-  });
-  const allAcked = ACKS.every((a) => acks[a.id]);
+  const [allAcked, setAllAcked] = React.useState(false);
 
   // 体質チェック結果・主訴カードから引き継いだ相談テーマ（?concern=...&concern2=...）
   const [topics, setTopics] = React.useState<{ primary?: string; secondary?: string }>({});
@@ -107,32 +100,46 @@ export default function ScreenConsult({ go }: { go: Go }) {
       </section>
 
       <section style={{ margin: "0 16px 16px", padding: "18px 18px", background: Palette.paper2, borderRadius: 16 }}>
-        <SectionHead kicker="Before you book" title="相談前のご確認" sub="以下の内容に同意のうえ、お申し込みください。" />
-        <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-          {ACKS.map((a) => (
-            <label
-              key={a.id}
-              style={{
-                display: "flex",
-                alignItems: "center",
-                gap: 12,
-                padding: "12px 12px",
-                background: "#fff",
-                border: `0.5px solid ${Palette.line}`,
-                borderRadius: 12,
-                cursor: "pointer",
-              }}
-            >
-              <input
-                type="checkbox"
-                checked={acks[a.id]}
-                onChange={(e) => setAcks((s) => ({ ...s, [a.id]: e.target.checked }))}
-                style={{ width: 18, height: 18, accentColor: Palette.roseDeep, flexShrink: 0 }}
-              />
-              <div style={{ flex: 1, fontSize: 12.5, color: Palette.ink, lineHeight: 1.6 }}>{a.label}</div>
-            </label>
+        <SectionHead kicker="Before you book" title="相談前のご確認" sub="以下の内容をご確認のうえ、お申し込みください。" />
+        <ul
+          style={{
+            margin: 0,
+            padding: "12px 14px 12px 32px",
+            background: "#fff",
+            border: `0.5px solid ${Palette.line}`,
+            borderRadius: 12,
+            fontSize: 12.5,
+            color: Palette.ink,
+            lineHeight: 1.85,
+          }}
+        >
+          {ACK_ITEMS.map((t) => (
+            <li key={t}>{t}</li>
           ))}
-        </div>
+        </ul>
+        <label
+          style={{
+            marginTop: 10,
+            display: "flex",
+            alignItems: "center",
+            gap: 12,
+            padding: "14px 14px",
+            background: allAcked ? Palette.roseTint : "#fff",
+            border: `${allAcked ? 1 : 0.5}px solid ${allAcked ? Palette.roseDeep : Palette.line}`,
+            borderRadius: 12,
+            cursor: "pointer",
+          }}
+        >
+          <input
+            type="checkbox"
+            checked={allAcked}
+            onChange={(e) => setAllAcked(e.target.checked)}
+            style={{ width: 20, height: 20, accentColor: Palette.roseDeep, flexShrink: 0 }}
+          />
+          <div style={{ flex: 1, fontSize: 13.5, color: Palette.ink, fontWeight: 500, lineHeight: 1.6 }}>
+            上記の内容を確認し、同意します
+          </div>
+        </label>
       </section>
 
       <div style={{ padding: "0 16px 16px", display: "flex", flexDirection: "column", gap: 10 }}>
