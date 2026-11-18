@@ -2138,3 +2138,16 @@ picture {
     display: none;
   }
 }
+
+/* 画像枠：<picture> を枠いっぱいにし、はみ出しを防ぐ（スマホでの見出しとの重なり対策） */
+.hero__photo,
+.approach__art,
+.media {
+  overflow: hidden;
+}
+.hero__photo picture,
+.approach__art picture,
+.media picture {
+  width: 100%;
+  height: 100%;
+}
