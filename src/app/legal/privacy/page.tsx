@@ -2,29 +2,17 @@ import LegalPage from "@/components/LegalPage";
 
 export const metadata = { title: "プライバシーポリシー" };
 
-const h2Style: React.CSSProperties = {
-  fontFamily: "var(--font-serif-stack)",
-  fontSize: 16,
-  marginTop: 28,
-  marginBottom: 10,
-  color: "#2a2326",
-  letterSpacing: 0.02,
-};
-const h3Style: React.CSSProperties = {
-  fontSize: 13.5,
-  fontWeight: 600,
-  marginTop: 16,
-  marginBottom: 6,
-  color: "#2a2326",
-};
-const pStyle: React.CSSProperties = { margin: "0 0 10px" };
-const olStyle: React.CSSProperties = { margin: "0 0 10px", padding: "0 0 0 22px" };
-const ulStyle: React.CSSProperties = { margin: "0 0 10px", padding: "0 0 0 22px" };
+// 見た目は globals.css の .legal-body で統一（本文の文言は変更していない）
+const h2Style: React.CSSProperties = {};
+const h3Style: React.CSSProperties = {};
+const pStyle: React.CSSProperties = {};
+const olStyle: React.CSSProperties = {};
+const ulStyle: React.CSSProperties = {};
 
 export default function Page() {
   return (
     <LegalPage title="プライバシーポリシー" kicker="Privacy">
-      <h2 style={{ ...h2Style, marginTop: 8 }}>はじめに</h2>
+      <h2 style={h2Style}>はじめに</h2>
       <p style={pStyle}>
         株式会社Social Bank（以下「当社」といいます。）は、当社が企画・運営するオンライン診療支援サービス「VISTA Wellness」（以下「本サービス」といいます。）における利用者情報の取扱いについて、以下のとおりプライバシーポリシー（以下「本ポリシー」といいます。）を定めます。
       </p>
@@ -366,7 +354,7 @@ export default function Page() {
       <p style={pStyle}>
         本ポリシーに関する問い合わせ、個人情報の開示・訂正・利用停止等の請求、苦情、相談については、以下の窓口までご連絡ください。
       </p>
-      <dl style={{ display: "grid", gridTemplateColumns: "96px 1fr", rowGap: 6, columnGap: 12, margin: "0 0 10px" }}>
+      <dl className="legal-dl">
         <dt>運営会社</dt>
         <dd>株式会社Social Bank</dd>
         <dt>所在地</dt>
@@ -375,7 +363,7 @@ export default function Page() {
         <dd>代表取締役 片山 幹健</dd>
         <dt>問い合わせ先</dt>
         <dd>
-          <a href="https://corporate.socialbk.com/" target="_blank" rel="noopener noreferrer" style={{ color: "#8a5a6c" }}>
+          <a href="https://corporate.socialbk.com/" target="_blank" rel="noopener noreferrer">
             https://corporate.socialbk.com/
           </a>
         </dd>

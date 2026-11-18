@@ -2,40 +2,25 @@ import LegalPage from "@/components/LegalPage";
 
 export const metadata = { title: "利用規約" };
 
-const h2Style: React.CSSProperties = {
-  fontFamily: "var(--font-serif-stack)",
-  fontSize: 16,
-  marginTop: 28,
-  marginBottom: 10,
-  color: "#2a2326",
-  letterSpacing: 0.02,
-};
-const h3Style: React.CSSProperties = {
-  fontSize: 13.5,
-  fontWeight: 600,
-  marginTop: 16,
-  marginBottom: 6,
-  color: "#2a2326",
-};
+// 見た目は globals.css の .legal-body で統一（本文の文言は変更していない）
+const h2Style: React.CSSProperties = {};
+const h3Style: React.CSSProperties = {};
 const partStyle: React.CSSProperties = {
-  fontFamily: "var(--font-serif-stack)",
-  fontSize: 13,
-  fontWeight: 600,
-  color: "#8a5a6c",
-  letterSpacing: 0.08,
-  marginTop: 30,
-  marginBottom: 4,
-  textTransform: "none",
+  fontFamily: "var(--serif)",
+  fontSize: 14,
+  color: "var(--accent)",
+  letterSpacing: "0.1em",
+  marginTop: 56,
 };
-const pStyle: React.CSSProperties = { margin: "0 0 10px" };
-const olStyle: React.CSSProperties = { margin: "0 0 10px", padding: "0 0 0 22px" };
-const ulStyle: React.CSSProperties = { margin: "0 0 10px", padding: "0 0 0 22px" };
-const ulPlainStyle: React.CSSProperties = { margin: "0 0 10px", padding: 0, listStyleType: "none" };
+const pStyle: React.CSSProperties = {};
+const olStyle: React.CSSProperties = {};
+const ulStyle: React.CSSProperties = {};
+const ulPlainStyle: React.CSSProperties = { listStyleType: "none", paddingLeft: 0 };
 
 export default function Page() {
   return (
     <LegalPage title="利用規約" kicker="Terms">
-      <h2 style={{ ...h2Style, marginTop: 8 }}>はじめに</h2>
+      <h2 style={h2Style}>はじめに</h2>
       <p style={pStyle}>この度は、VISTA Wellnessをご利用いただき、誠にありがとうございます。</p>
       <p style={pStyle}>
         本利用規約（以下「本規約」といいます。）は、株式会社Social Bank（以下「当社」といいます。）が企画・運営するオンライン診療支援サービス「VISTA Wellness」（以下「本サービス」といいます。）の利用条件を定めるものです。

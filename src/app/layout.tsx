@@ -1,7 +1,9 @@
 import type { Metadata, Viewport } from "next";
-import { Noto_Sans_JP, Noto_Serif_JP, JetBrains_Mono } from "next/font/google";
+import { Noto_Sans_JP, Noto_Serif_JP, DM_Sans } from "next/font/google";
 import { Analytics } from "@vercel/analytics/next";
-import { BRAND, CURRENT_PRICE_LABEL } from "@/components/data";
+import { SITE } from "@/config/vista";
+import { VISTA_ASSETS } from "@/config/vistaAssets";
+import { publicFileExists } from "@/lib/assets";
 import "./globals.css";
 
 const sans = Noto_Sans_JP({
@@ -12,54 +14,60 @@ const sans = Noto_Sans_JP({
 });
 const serif = Noto_Serif_JP({
   subsets: ["latin"],
-  weight: ["300", "400", "500", "600", "700"],
+  weight: ["400", "500", "600"],
   variable: "--font-serif",
   display: "swap",
 });
-const mono = JetBrains_Mono({
+const en = DM_Sans({
   subsets: ["latin"],
-  weight: ["400", "500"],
-  variable: "--font-mono",
+  weight: ["400", "500", "600", "700"],
+  variable: "--font-en",
   display: "swap",
 });
 
 /** Google Tag Manager のコンテナ ID */
 const GTM_ID = "GTM-T2DXVQVQ";
 
-const SITE_TITLE =`VISTA Wellness — ${BRAND.tagline}`;
-const SITE_DESCRIPTION = `${BRAND.subtagline} 自由診療・${CURRENT_PRICE_LABEL}。`;
+// OGP 画像は public/images/vista/og-image.webp を置くと自動で設定される
+const ogImage = publicFileExists(VISTA_ASSETS.og.src)
+  ? [{ url: VISTA_ASSETS.og.src, width: VISTA_ASSETS.og.width, height: VISTA_ASSETS.og.height, alt: SITE.name }]
+  : undefined;
 
 export const metadata: Metadata = {
+  metadataBase: new URL(SITE.url),
   title: {
-    default: SITE_TITLE,
-    template: "%s | VISTA Wellness",
+    default: SITE.title,
+    template: `%s | ${SITE.name}`,
   },
-  description: SITE_DESCRIPTION,
-  applicationName: "VISTA Wellness",
+  description: SITE.description,
+  applicationName: SITE.name,
   robots: { index: true, follow: true },
   openGraph: {
     type: "website",
-    siteName: "VISTA Wellness",
-    title: SITE_TITLE,
-    description: SITE_DESCRIPTION,
+    siteName: SITE.name,
+    title: SITE.title,
+    description: SITE.description,
     locale: "ja_JP",
+    images: ogImage,
   },
   twitter: {
-    card: "summary",
-    title: SITE_TITLE,
-    description: SITE_DESCRIPTION,
+    card: ogImage ? "summary_large_image" : "summary",
+    title: SITE.title,
+    description: SITE.description,
+    images: ogImage?.map((i) => i.url),
   },
 };
 
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
-  themeColor: "#fcfaf7",
+  themeColor: "#faf8f5",
+  viewportFit: "cover",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="ja" className={`${sans.variable} ${serif.variable} ${mono.variable}`}>
+    <html lang="ja" className={`${sans.variable} ${serif.variable} ${en.variable}`}>
       <head>
         {/* Google Tag Manager */}
         <script async src={`https://www.googletagmanager.com/gtm.js?id=${GTM_ID}`} />
@@ -72,7 +80,7 @@ gtag('js', new Date());`,
         />
       </head>
       <body>
-        <div className="app-frame">{children}</div>
+        {children}
         <Analytics />
       </body>
     </html>
