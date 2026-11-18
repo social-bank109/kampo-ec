@@ -24,6 +24,8 @@ export type VistaAsset = {
   label: string;
   /** 表示方法（製品写真は contain で切らずに表示） */
   fit?: "cover" | "contain";
+  /** 画像の背景色（製品写真の余白を枠になじませる） */
+  bg?: string;
   /**
    * 掲載保留。ファイルがあってもプレースホルダーを表示する（権利・表記の確認待ち等）。
    * 理由を文字列で記載。解除する場合はこの行を削除。
@@ -58,31 +60,31 @@ export const VISTA_ASSETS = {
   },
   kampoSeijoBofuto: {
     // 漢方の画像はアップロード済みの public/images/kampo/ を使用
-    src: "/images/kampo/seijo-bofuto.jpg",
-    width: 2560,
-    height: 2560,
+    src: "/images/kampo/seijo-bofuto.webp",
+    width: 600,
+    height: 386,
     fit: "contain",
-    hold: "画像右下に他院（巣鴨千石皮ふ科）の表記が入っているため掲載保留。表記の無い画像に差し替えたら削除",
+    bg: "#ffffff",
     alt: "清上防風湯のイメージ",
     label: "清上防風湯",
   },
   kampoKeigaiRengyoto: {
     // 漢方の画像はアップロード済みの public/images/kampo/ を使用
-    src: "/images/kampo/keigairengyoto.jpg",
-    width: 2560,
-    height: 2560,
+    src: "/images/kampo/keigairengyoto.webp",
+    width: 600,
+    height: 386,
     fit: "contain",
-    hold: "画像右下に他院（巣鴨千石皮ふ科）の表記が入っているため掲載保留。表記の無い画像に差し替えたら削除",
+    bg: "#ffffff",
     alt: "荊芥連翹湯のイメージ",
     label: "荊芥連翹湯",
   },
   kampoJumiHaidokuto: {
     // 漢方の画像はアップロード済みの public/images/kampo/ を使用
-    src: "/images/kampo/jyumihaidokuto.jpg",
-    width: 2560,
-    height: 2560,
+    src: "/images/kampo/jyumihaidokuto.webp",
+    width: 600,
+    height: 386,
     fit: "contain",
-    hold: "画像右下に他院（巣鴨千石皮ふ科）の表記が入っているため掲載保留。表記の無い画像に差し替えたら削除",
+    bg: "#ffffff",
     alt: "十味敗毒湯のイメージ",
     label: "十味敗毒湯",
   },

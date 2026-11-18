@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { KAMPO_DOCTOR_NOTE, KAMPO_PLANNED_LABEL, type Kampo } from "@/config/vista";
-import type { VistaAssetKey } from "@/config/vistaAssets";
+import { VISTA_ASSETS, type VistaAssetKey } from "@/config/vistaAssets";
 import { resolveAsset } from "@/lib/assets";
 import VistaImage from "./VistaImage";
 
@@ -11,7 +11,10 @@ export function KampoArt({ k, sizes }: { k: Kampo; sizes: string }) {
   const groupCls = k.group === "balance" ? "kampo-art--balance" : "";
   if (available) {
     return (
-      <div className={`kampo-art kampo-art--photo ${groupCls}`}>
+      <div
+        className={`kampo-art kampo-art--photo ${groupCls}`}
+        style={{ background: (VISTA_ASSETS[key] as { bg?: string }).bg }}
+      >
         <VistaImage assetKey={key} sizes={sizes} />
       </div>
     );

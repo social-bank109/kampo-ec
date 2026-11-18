@@ -17,11 +17,11 @@
 | 桂枝茯苓丸 | `keishibukuryogan.jpg` | 表示中 |
 | 当帰芍薬散 | `tokishakuyakusan.jpg` | 表示中 |
 | 加味逍遙散 | `kamishoyosan.jpg` | 表示中 |
-| 清上防風湯 | `seijo-bofuto.jpg` | **掲載保留**（画像に他院「巣鴨千石皮ふ科」の表記） |
-| 荊芥連翹湯 | `keigairengyoto.jpg` | **掲載保留**（同上） |
-| 十味敗毒湯 | `jyumihaidokuto.jpg` | **掲載保留**（同上） |
+| 清上防風湯 | `seijo-bofuto.webp` | 表示中（差し替え済み）|
+| 荊芥連翹湯 | `keigairengyoto.webp` | 表示中（差し替え済み）|
+| 十味敗毒湯 | `jyumihaidokuto.webp` | 表示中（差し替え済み）|
 
-表記の無い画像を**同じファイル名で上書きアップロード**し、`vistaAssets.ts` の該当行の `hold: "…"` を削除すると表示されます。製品写真（ツムラ）の利用許諾も確認してください。
+掲載を一時停止したい画像は、`vistaAssets.ts` の該当項目に `hold: "理由"` を追加するとプレースホルダー表示に戻ります。製品写真（ツムラ）の利用許諾も確認してください。
 
 ## 画像一覧
 
