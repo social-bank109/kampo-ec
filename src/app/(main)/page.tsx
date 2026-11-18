@@ -230,7 +230,7 @@ export default function HomePage() {
                   医療用漢方という選択肢。
                 </>
               }
-              sub="VISTA Wellnessで取り扱い・導入を予定している6つの医療用漢方をご紹介します。肌の状態や月経・冷えなどの症状、服薬状況を踏まえ、処方の必要性は医師が判断します。"
+              sub="VISTA Wellnessで取り扱っている6つの医療用漢方をご紹介します。肌の状態や月経・冷えなどの症状、服薬状況を踏まえ、処方の必要性は医師が判断します。"
             />
           </div>
           {KAMPO_GROUPS.map((g) => (
@@ -259,7 +259,7 @@ export default function HomePage() {
             </div>
           </div>
           <p className="small-note" style={{ marginTop: 16 }}>
-            ※「導入準備中」の漢方は、現在取り扱いの準備を進めているものです。取り扱い開始前は処方できません。{KAMPO_SAFETY_NOTE}
+            ※{KAMPO_SAFETY_NOTE}
           </p>
           <div className="cta-stack" style={{ marginTop: 28 }}>
             <LineCTA position="formulation" variant="outline" />

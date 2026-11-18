@@ -8,6 +8,17 @@
 
 ファイル名やサイズを変えたい場合は `src/config/vistaAssets.ts` を編集してください。
 
+## 配置済みの画像（2026/11 更新）
+
+| ファイル | 備考 |
+|---|---|
+| `public/images/vista/hero-desktop.webp` / `hero-mobile.webp` | PC は全幅に敷き人物を右寄せ、スマホは縦長比率で表示 |
+| `public/images/vista/approach-skin.webp` | |
+| `public/images/vista/doctor-consultation.webp` | |
+| `public/images/vista/og-image.webp` → `og-image.jpg` | OGP は SNS 互換性のため JPEG（1200×630）を使用 |
+
+※アップロードされた画像は拡張子 .webp の PNG（各約1.8MB）だったため、WebP（品質82、各70〜130KB）に変換して配置しています。差し替える際は実際に WebP 形式で書き出すか、PNG/JPG の場合は拡張子を合わせて `vistaAssets.ts` を変更してください。
+
 ## 漢方6剤の画像（2026/11 更新）
 
 漢方の画像は、アップロード済みの **`public/images/kampo/`** のJPEGを使用しています（`src/config/vistaAssets.ts` で指定）。

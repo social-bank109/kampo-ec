@@ -217,7 +217,7 @@ export const FAQ_ITEMS: FaqItem[] = [
 // 漢方6剤（ホーム FORMULATIONS / 詳細ページ）
 //
 // status:
-//   available … 既存サイトで取り扱いとして掲載していた剤（当帰芍薬散・加味逍遙散）
+//   available … 取り扱い中（2026/11 時点で6剤すべて）
 //   planned   … 新規導入予定。仕入・院内採用・医師承認が確定するまで「導入準備中」と表示
 // TODO: MEDICAL_REVIEW — 説明文・効能効果・注意事項は、採用メーカー・剤形の最新電子添文と
 //                         提携医師の確認が必要。
@@ -266,7 +266,7 @@ export const KAMPO: Kampo[] = [
     name: "清上防風湯",
     reading: "せいじょうぼうふうとう",
     group: "skin",
-    status: "planned",
+    status: "available",
     makerNumber: "TJ-58",
     summary: "赤みや炎症を伴うニキビなどで検討されることがある医療用漢方です。",
     checkPoints: ["ニキビの部位・赤み・炎症の程度", "これまでの皮膚科治療・外用薬", "胃腸の状態や体力"],
@@ -278,7 +278,7 @@ export const KAMPO: Kampo[] = [
     name: "荊芥連翹湯",
     reading: "けいがいれんぎょうとう",
     group: "skin",
-    status: "planned",
+    status: "available",
     makerNumber: "TJ-50",
     summary: "にきびなどの皮膚症状で検討されることがある医療用漢方です。",
     checkPoints: ["繰り返す肌の症状と経過", "鼻・のどなど他の症状の有無", "服用中の薬"],
@@ -290,7 +290,7 @@ export const KAMPO: Kampo[] = [
     name: "十味敗毒湯",
     reading: "じゅうみはいどくとう",
     group: "skin",
-    status: "planned",
+    status: "available",
     makerNumber: "TJ-6",
     summary: "化膿を伴う皮膚の症状などで検討されることがある医療用漢方です。",
     checkPoints: ["化膿・腫れの有無と範囲", "症状が出始めた時期", "アレルギー歴"],
@@ -302,8 +302,7 @@ export const KAMPO: Kampo[] = [
     name: "桂枝茯苓丸",
     reading: "けいしぶくりょうがん",
     group: "balance",
-    // 旧サイトの取扱い一覧に無かったため、採用確認までは planned
-    status: "planned",
+    status: "available",
     makerNumber: "TJ-25",
     summary: "月経に伴う不調やのぼせなど、併存する症状の評価に応じて検討されることがあります。",
     checkPoints: ["月経周期と肌の状態の関係", "のぼせ・肩こり・下腹部の張り", "妊娠の可能性"],

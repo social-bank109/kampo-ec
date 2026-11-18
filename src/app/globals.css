@@ -2099,3 +2099,42 @@ picture {
   width: 100%;
   height: 100%;
 }
+
+/* ── illustration tuning (hero / approach) ─────────────── */
+/* PC：イラストは左側に余白があるため全幅に敷き、人物を右に寄せる */
+@media (min-width: 901px) {
+  .hero__photo {
+    width: 100%;
+  }
+  .hero__photo img {
+    object-position: right center;
+  }
+  .hero__photo::after {
+    background: linear-gradient(90deg, #f7efec 0%, #f7efecd9 28%, #f7efec00 52%);
+  }
+  .hero::after {
+    display: none;
+  }
+}
+/* スマホ：縦長イラストを比率どおりに表示し、顔が切れないようにする */
+@media (max-width: 900px) {
+  .hero__photo {
+    height: auto;
+    min-height: 0;
+    max-height: none;
+    aspect-ratio: 1134 / 1387;
+    max-height: 72vh;
+  }
+  .hero__photo img {
+    object-position: center 70%;
+  }
+  .approach__art {
+    aspect-ratio: 1 / 1;
+  }
+  .approach__art img {
+    object-position: center 15%;
+  }
+  .approach__art::after {
+    display: none;
+  }
+}
