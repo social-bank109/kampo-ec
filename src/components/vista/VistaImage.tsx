@@ -27,7 +27,7 @@ export default function VistaImage({
   if (!available) return <ImagePlaceholder label={asset.label} tone={tone} />;
 
   const main = hasMain ? asset.src : asset.mobileSrc!;
-  const a = asset as typeof asset & { mobileWidth?: number; mobileHeight?: number };
+  const a = asset as typeof asset & { mobileWidth?: number; mobileHeight?: number; fit?: "cover" | "contain" };
   return (
     <picture>
       {hasMain && hasMobile && (
@@ -48,7 +48,7 @@ export default function VistaImage({
         loading={priority ? "eager" : "lazy"}
         fetchPriority={priority ? "high" : undefined}
         decoding="async"
-        style={{ width: "100%", height: "100%", objectFit: "cover" }}
+        style={{ width: "100%", height: "100%", objectFit: a.fit ?? "cover" }}
       />
     </picture>
   );

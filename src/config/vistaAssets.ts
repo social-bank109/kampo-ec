@@ -22,6 +22,13 @@ export type VistaAsset = {
   alt: string;
   /** プレースホルダーに表示する用途ラベル */
   label: string;
+  /** 表示方法（製品写真は contain で切らずに表示） */
+  fit?: "cover" | "contain";
+  /**
+   * 掲載保留。ファイルがあってもプレースホルダーを表示する（権利・表記の確認待ち等）。
+   * 理由を文字列で記載。解除する場合はこの行を削除。
+   */
+  hold?: string;
 };
 
 export const VISTA_ASSETS = {
@@ -50,44 +57,59 @@ export const VISTA_ASSETS = {
     label: "ONLINE CONSULTATION — doctor-consultation",
   },
   kampoSeijoBofuto: {
-    src: `${VISTA_IMAGE_DIR}/kampo-seijo-bofuto.webp`,
-    width: 800,
-    height: 600,
+    // 漢方の画像はアップロード済みの public/images/kampo/ を使用
+    src: "/images/kampo/seijo-bofuto.jpg",
+    width: 2560,
+    height: 2560,
+    fit: "contain",
+    hold: "画像右下に他院（巣鴨千石皮ふ科）の表記が入っているため掲載保留。表記の無い画像に差し替えたら削除",
     alt: "清上防風湯のイメージ",
     label: "清上防風湯",
   },
   kampoKeigaiRengyoto: {
-    src: `${VISTA_IMAGE_DIR}/kampo-keigai-rengyoto.webp`,
-    width: 800,
-    height: 600,
+    // 漢方の画像はアップロード済みの public/images/kampo/ を使用
+    src: "/images/kampo/keigairengyoto.jpg",
+    width: 2560,
+    height: 2560,
+    fit: "contain",
+    hold: "画像右下に他院（巣鴨千石皮ふ科）の表記が入っているため掲載保留。表記の無い画像に差し替えたら削除",
     alt: "荊芥連翹湯のイメージ",
     label: "荊芥連翹湯",
   },
   kampoJumiHaidokuto: {
-    src: `${VISTA_IMAGE_DIR}/kampo-jumi-haidokuto.webp`,
-    width: 800,
-    height: 600,
+    // 漢方の画像はアップロード済みの public/images/kampo/ を使用
+    src: "/images/kampo/jyumihaidokuto.jpg",
+    width: 2560,
+    height: 2560,
+    fit: "contain",
+    hold: "画像右下に他院（巣鴨千石皮ふ科）の表記が入っているため掲載保留。表記の無い画像に差し替えたら削除",
     alt: "十味敗毒湯のイメージ",
     label: "十味敗毒湯",
   },
   kampoKeishiBukuryogan: {
-    src: `${VISTA_IMAGE_DIR}/kampo-keishi-bukuryogan.webp`,
-    width: 800,
-    height: 600,
+    // 漢方の画像はアップロード済みの public/images/kampo/ を使用
+    src: "/images/kampo/keishibukuryogan.jpg",
+    width: 840,
+    height: 840,
+    fit: "contain",
     alt: "桂枝茯苓丸のイメージ",
     label: "桂枝茯苓丸",
   },
   kampoTokiShakuyakusan: {
-    src: `${VISTA_IMAGE_DIR}/kampo-toki-shakuyakusan.webp`,
-    width: 800,
-    height: 600,
+    // 漢方の画像はアップロード済みの public/images/kampo/ を使用
+    src: "/images/kampo/tokishakuyakusan.jpg",
+    width: 840,
+    height: 840,
+    fit: "contain",
     alt: "当帰芍薬散のイメージ",
     label: "当帰芍薬散",
   },
   kampoKamiShoyosan: {
-    src: `${VISTA_IMAGE_DIR}/kampo-kami-shoyosan.webp`,
-    width: 800,
-    height: 600,
+    // 漢方の画像はアップロード済みの public/images/kampo/ を使用
+    src: "/images/kampo/kamishoyosan.jpg",
+    width: 840,
+    height: 840,
+    fit: "contain",
     alt: "加味逍遙散のイメージ",
     label: "加味逍遙散",
   },

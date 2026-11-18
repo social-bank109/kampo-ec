@@ -301,6 +301,7 @@ export const KAMPO: Kampo[] = [
     group: "balance",
     // 旧サイトの取扱い一覧に無かったため、採用確認までは planned
     status: "planned",
+    makerNumber: "TJ-25",
     summary: "月経に伴う不調やのぼせなど、併存する症状の評価に応じて検討されることがあります。",
     checkPoints: ["月経周期と肌の状態の関係", "のぼせ・肩こり・下腹部の張り", "妊娠の可能性"],
     cautions: ["妊娠中・妊娠の可能性がある方", "胃腸が弱い方"],

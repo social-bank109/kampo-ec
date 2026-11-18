@@ -18,7 +18,8 @@ export function publicFileExists(publicPath: string | undefined): boolean {
 
 export function resolveAsset(key: VistaAssetKey) {
   const a = VISTA_ASSETS[key] as (typeof VISTA_ASSETS)[VistaAssetKey] & { mobileSrc?: string };
-  const hasMain = publicFileExists(a.src);
-  const hasMobile = publicFileExists(a.mobileSrc);
+  const held = "hold" in a && Boolean(a.hold);
+  const hasMain = !held && publicFileExists(a.src);
+  const hasMobile = !held && publicFileExists(a.mobileSrc);
   return { asset: a, hasMain, hasMobile, available: hasMain || hasMobile };
 }

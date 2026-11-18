@@ -8,6 +8,21 @@
 
 ファイル名やサイズを変えたい場合は `src/config/vistaAssets.ts` を編集してください。
 
+## 漢方6剤の画像（2026/11 更新）
+
+漢方の画像は、アップロード済みの **`public/images/kampo/`** のJPEGを使用しています（`src/config/vistaAssets.ts` で指定）。
+
+| 漢方 | ファイル | 状態 |
+|---|---|---|
+| 桂枝茯苓丸 | `keishibukuryogan.jpg` | 表示中 |
+| 当帰芍薬散 | `tokishakuyakusan.jpg` | 表示中 |
+| 加味逍遙散 | `kamishoyosan.jpg` | 表示中 |
+| 清上防風湯 | `seijo-bofuto.jpg` | **掲載保留**（画像に他院「巣鴨千石皮ふ科」の表記） |
+| 荊芥連翹湯 | `keigairengyoto.jpg` | **掲載保留**（同上） |
+| 十味敗毒湯 | `jyumihaidokuto.jpg` | **掲載保留**（同上） |
+
+表記の無い画像を**同じファイル名で上書きアップロード**し、`vistaAssets.ts` の該当行の `hold: "…"` を削除すると表示されます。製品写真（ツムラ）の利用許諾も確認してください。
+
 ## 画像一覧
 
 | ファイル名 | 用途 | 推奨サイズ（比率） | トリミングの注意 | 代替テキスト（alt） |

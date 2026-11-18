@@ -2090,3 +2090,12 @@ picture {
   align-items: flex-start;
   justify-content: flex-end;
 }
+
+/* 漢方の製品写真：切らずに収め、写真の背景色に馴染ませる */
+.kampo-art--photo {
+  background: #eef0f3;
+}
+.kampo-art--photo picture {
+  width: 100%;
+  height: 100%;
+}
