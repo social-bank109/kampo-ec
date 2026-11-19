@@ -16,10 +16,21 @@ export function publicFileExists(publicPath: string | undefined): boolean {
   }
 }
 
-export function resolveAsset(key: VistaAssetKey) {
+export function resolveAsset(key: VistaAssetKey): {
+  asset: (typeof VISTA_ASSETS)[VistaAssetKey] & { mobileSrc?: string };
+  hasMain: boolean;
+  hasMobile: boolean;
+  available: boolean;
+} {
   const a = VISTA_ASSETS[key] as (typeof VISTA_ASSETS)[VistaAssetKey] & { mobileSrc?: string };
   const held = "hold" in a && Boolean(a.hold);
   const hasMain = !held && publicFileExists(a.src);
   const hasMobile = !held && publicFileExists(a.mobileSrc);
+  const fb = "fallback" in a ? (a.fallback as VistaAssetKey | undefined) : undefined;
+  if (!hasMain && !hasMobile && fb && fb !== key && fb in VISTA_ASSETS) {
+    // 代替アセットを表示（alt は本来の用途のものを維持）
+    const r = resolveAsset(fb);
+    if (r.available) return { ...r, asset: { ...r.asset, alt: a.alt } };
+  }
   return { asset: a, hasMain, hasMobile, available: hasMain || hasMobile };
 }

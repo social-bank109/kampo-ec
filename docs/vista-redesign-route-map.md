@@ -75,3 +75,13 @@
 | 「体質チェックをはじめる」「この悩みを医師に相談する」等 | 「LINEで診療予約へ」に統一 |
 | タブバー | ヘッダーナビ＋ハンバーガーメニュー＋スマホ固定LINE CTA |
 | メタ情報（総合ウェルネス） | 美容漢方のタイトル・説明、OGP画像は `og-image.webp` 配置で自動設定 |
+
+## 6. 2026/11/19 追加改修（オンライン診療の安心感向上）
+
+| 対象 | 変更 |
+|---|---|
+| `/`（トップ） | 特長セクションの直後・漢方6剤／料金の前に3セクションを追加：「はじめてのオンライン診療でも、安心して。」「オンライン診療って、何をするの？」「オンラインでも、肌の状態を診てもらえるの？」。FAQ に6問追加 |
+| `/consult` | 「予約から再診までの流れ」ページとして全面改修（7ステップ図解・STEP 1〜7 の詳細・FAQ）。旧「肌悩みを、医師に相談するために。」の構成は置き換え |
+| ナビ | 「診療の流れ（/#flow）」「医師への相談」→「オンライン診療（/#online）」「予約から再診までの流れ（/consult）」 |
+| 新規コンポーネント | `src/components/vista/sections/OnlineConsultIntro.tsx` / `ConsultConversation.tsx` / `OnlineAssessment.tsx`、`TrackedSection.tsx` / `TrackedLink.tsx` / `PageEvent.tsx` / `lineIcons.tsx` |
+| 設定 | `src/config/vista.ts`：`CONSULT_SETUP`（女性医師・診察時間）、7ステップの `FLOW_STEPS`、ID付き FAQ（`FAQ_ITEMS` / `FAQ_FLOW_ITEMS`） |

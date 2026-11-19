@@ -6,7 +6,7 @@ const SERVICE_LINKS = [
   { href: "/", label: "ホーム" },
   { href: "/pricing", label: "料金" },
   { href: "/check", label: "肌荒れ・体調チェック" },
-  { href: "/consult", label: "医師への相談・受診の流れ" },
+  { href: "/consult", label: "予約から再診までの流れ" },
   { href: "/contact", label: "お問い合わせ" },
 ];
 

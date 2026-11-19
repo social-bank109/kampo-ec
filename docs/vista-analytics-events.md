@@ -16,6 +16,10 @@
 | `line_cta_click` | LINE CTA（`a[data-cta="line"]`）のクリック | `page_path`（クエリ・ハッシュなし）、`cta_position`、`campaign` | `src/components/vista/LineCTA.tsx` |
 | `skin_check_start` | チェックの「チェックをはじめる」 | `page_path` | `src/components/vista/SkinCheck.tsx` |
 | `skin_check_complete` | 結果画面の表示 | `page_path` | 同上 |
+| `section_view` | トップの新セクションが画面に40%以上表示（1ページ表示につき1回） | `section_id`（`home_online_consult_intro` / `home_consult_conversation` / `home_online_assessment`）、`page_path` | `src/components/vista/TrackedSection.tsx` |
+| `flow_link_click` | 「予約から再診までの流れ」ページへのリンクのクリック | `link_position`（`home_conversation` / `home_flow`）、`page_path` | `src/components/vista/TrackedLink.tsx` |
+| `flow_page_view` | 「予約から再診までの流れ」ページ（`/consult`）の表示 | `page_path` | `src/components/vista/PageEvent.tsx` |
+| `faq_toggle` | FAQ の開閉 | `faq_id`（設問の識別子のみ）、`faq_state`（open/close）、`page_path` | `src/components/vista/FAQAccordion.tsx` |
 
 ### `cta_position` の値
 
@@ -27,7 +31,8 @@
 | `formulation` | ホーム 漢方6剤セクション下 |
 | `pricing` | ホーム料金カード、料金ページ（カード・最下部） |
 | `final` | ホーム 最終CTA |
-| `consult` | 相談ページ（FV・流れの後・最下部の3か所） |
+| `flow_hero` / `flow_step1` / `flow_step4` / `flow_final` | 予約から再診までの流れページ（FV・STEP1・STEP4後・最下部） |
+| `consult` | （旧相談ページ。現在は未使用） |
 | `check_result` | チェック結果画面 |
 | `detail` | 漢方詳細ページ |
 | `contact` | お問い合わせページ |
@@ -45,6 +50,10 @@
 3. GA4 イベントタグ：イベント名 `line_cta_click`、上記3パラメータを送信（GA4でカスタムディメンション登録）
 4. **二重発火の防止**：GTM に `lin.ee` 宛の「リンククリック」トリガーやクリック計測タグが既にある場合は停止するか、条件に `data-cta != line` を追加
 5. 広告のコンバージョン（Meta Pixel 等）に使う場合も、送るのはイベント名と `cta_position` まで
+
+### トップ／流れページからの LINE クリックの区別
+
+`line_cta_click` の `page_path`（`/` または `/consult`）と `cta_position` で区別できます。GA4 の探索レポートで `page_path × cta_position` を行に置くと比較できます。
 
 ## 指標の注意
 

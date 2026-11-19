@@ -19,7 +19,11 @@ export type LineCtaPosition =
   | "consult"
   | "check_result"
   | "detail"
-  | "contact";
+  | "contact"
+  | "flow_hero"
+  | "flow_step1"
+  | "flow_step4"
+  | "flow_final";
 
 type DataLayerEvent = Record<string, string | number | boolean | undefined>;
 
@@ -71,4 +75,19 @@ export function trackLineClick(position: LineCtaPosition) {
     cta_position: position,
     campaign: typeof window !== "undefined" ? getCampaign() : undefined,
   });
+}
+
+/** ページ内のセクションが初めて表示された（1ページ表示につき1回） */
+export function trackSectionView(sectionId: string) {
+  pushEvent("section_view", { section_id: sectionId, page_path: window.location.pathname });
+}
+
+/** 「予約から再診までの流れ」ページへのリンクのクリック */
+export function trackFlowLinkClick(linkPosition: string) {
+  pushEvent("flow_link_click", { link_position: linkPosition, page_path: window.location.pathname });
+}
+
+/** FAQ の開閉。faq_id は設問の識別子のみ（回答内容は送らない） */
+export function trackFaqToggle(faqId: string, open: boolean) {
+  pushEvent("faq_toggle", { faq_id: faqId, faq_state: open ? "open" : "close", page_path: window.location.pathname });
 }

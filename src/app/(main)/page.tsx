@@ -18,6 +18,10 @@ import SectionHeading from "@/components/vista/SectionHeading";
 import KampoCard from "@/components/vista/KampoCard";
 import FAQAccordion from "@/components/vista/FAQAccordion";
 import DisclosureNotice from "@/components/vista/DisclosureNotice";
+import FlowLink from "@/components/vista/TrackedLink";
+import OnlineConsultIntro from "@/components/vista/sections/OnlineConsultIntro";
+import ConsultConversation from "@/components/vista/sections/ConsultConversation";
+import OnlineAssessment from "@/components/vista/sections/OnlineAssessment";
 
 export const dynamic = "force-static";
 
@@ -216,6 +220,11 @@ export default function HomePage() {
         </div>
       </section>
 
+      {/* はじめてのオンライン診療でも、安心して。 / 何をするの？ / オンラインでも診てもらえる？ */}
+      <OnlineConsultIntro />
+      <ConsultConversation />
+      <OnlineAssessment />
+
       {/* FORMULATIONS */}
       <section className="section formulary" id="kampo" aria-labelledby="kampo-title">
         <div className="container">
@@ -348,9 +357,9 @@ export default function HomePage() {
           <p className="small-note" style={{ marginTop: 34 }}>
             初回は原則30日分。約1か月後の再診で継続できる場合は、原則3か月ごとの診察・90日分のお届けに移行します。
             <br />
-            <Link className="text-link" href="/consult">
+            <FlowLink position="home_flow" className="text-link">
               予約から再診までの詳しい流れ
-            </Link>
+            </FlowLink>
           </p>
         </div>
       </section>

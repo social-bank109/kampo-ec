@@ -24,6 +24,8 @@ export type VistaAsset = {
   label: string;
   /** 表示方法（製品写真は contain で切らずに表示） */
   fit?: "cover" | "contain";
+  /** 未配備時に代わりに表示する既存アセット（無ければプレースホルダー） */
+  fallback?: string;
   /** 画像の背景色（製品写真の余白を枠になじませる） */
   bg?: string;
   /**
@@ -57,6 +59,24 @@ export const VISTA_ASSETS = {
     height: 1024,
     alt: "自宅からパソコンでオンライン診療を受ける女性のイラスト",
     label: "ONLINE CONSULTATION — doctor-consultation",
+  },
+  flowHero: {
+    // 「予約から再診までの流れ」ページのFV（女性が自宅でPCを利用するイラスト）
+    // 未配備の間は doctor-consultation.webp を表示
+    src: `${VISTA_IMAGE_DIR}/flow-hero.webp`,
+    width: 1536,
+    height: 1024,
+    fallback: "doctor",
+    alt: "自宅でパソコンを開き、オンライン診療の準備をする女性のイラスト",
+    label: "FLOW HERO — flow-hero",
+  },
+  flowDelivery: {
+    // STEP 6「漢方のお届け」（薬包・お届けのイラスト）
+    src: `${VISTA_IMAGE_DIR}/flow-delivery.webp`,
+    width: 1200,
+    height: 900,
+    alt: "ご自宅に届いた漢方の薬包のイラスト",
+    label: "DELIVERY — flow-delivery",
   },
   kampoSeijoBofuto: {
     // 漢方の画像はアップロード済みの public/images/kampo/ を使用

@@ -2151,3 +2151,450 @@ picture {
   width: 100%;
   height: 100%;
 }
+
+/* ── 2026/11 online consultation reassurance ───────────── */
+
+.icon-badge {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--brown);
+  background: #f3e6e2;
+  flex-shrink: 0;
+}
+.icon-badge svg {
+  width: 40px;
+  height: 40px;
+}
+.icon-badge--blue {
+  background: #e4e9ee;
+}
+.icon-badge--rose {
+  background: #f3e6e2;
+}
+.icon-badge--small {
+  width: 44px;
+  height: 44px;
+}
+.icon-badge--small svg {
+  width: 30px;
+  height: 30px;
+}
+
+/* 4-1 安心の3カード */
+.reassure {
+  background: var(--cream);
+  border-top: 1px solid var(--line);
+}
+.reassure-grid {
+  list-style: none;
+  margin: 50px 0 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 18px;
+}
+.reassure-card {
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 3px;
+  padding: 32px 28px 28px;
+  text-align: center;
+}
+.reassure-card h3 {
+  font: 500 17px/1.6 var(--serif);
+  letter-spacing: 0.04em;
+  margin: 18px 0 10px;
+}
+.reassure-card p {
+  font-size: 13.5px;
+  color: #6f625b;
+  line-height: 1.95;
+  margin: 0;
+  text-align: left;
+}
+.reassure-card .reassure-card__note {
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid #f0e8e3;
+  font-size: 12px;
+  color: #82736d;
+}
+
+/* 4-2 会話 */
+.conversation {
+  background: #fff;
+}
+.conversation__grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 48px;
+  align-items: center;
+  margin-top: 48px;
+}
+.conversation__art {
+  aspect-ratio: 3 / 2;
+}
+.conversation__summary {
+  font-size: 13.5px;
+  color: #5e534d;
+  line-height: 2;
+  margin: 18px 0 22px;
+}
+.chat {
+  margin: 0;
+}
+.chat__list {
+  list-style: none;
+  margin: 0 0 10px;
+  padding: 0;
+  display: grid;
+  gap: 12px;
+}
+.chat__row {
+  display: flex;
+  align-items: flex-end;
+  gap: 10px;
+}
+.chat__row--patient {
+  flex-direction: row-reverse;
+}
+.chat__who {
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  color: var(--brown);
+  background: #e4e9ee;
+}
+.chat__row--patient .chat__who {
+  background: #f3e6e2;
+}
+.chat__bubble {
+  margin: 0;
+  max-width: 78%;
+  padding: 12px 16px;
+  font-size: 13.5px;
+  line-height: 1.85;
+  background: #f4f6f8;
+  border: 1px solid #e3e8ec;
+  border-radius: 14px 14px 14px 3px;
+}
+.chat__row--patient .chat__bubble {
+  background: #faf1ee;
+  border-color: #efdfd9;
+  border-radius: 14px 14px 3px 14px;
+}
+
+/* 4-3 オンラインでの評価 */
+.assess {
+  background: var(--paper-warm);
+}
+.assess__text {
+  margin: 28px auto 0;
+  max-width: 720px;
+  font-size: 14px;
+  color: #5e534d;
+  line-height: 2;
+}
+.assess__text p {
+  margin: 0 0 10px;
+}
+.assess-steps {
+  list-style: none;
+  margin: 36px 0 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 34px;
+  position: relative;
+}
+.assess-step {
+  text-align: center;
+  position: relative;
+  background: #fff;
+  border: 1px solid var(--line);
+  padding: 28px 18px 22px;
+}
+.assess-step:not(:last-child)::after {
+  content: "→";
+  position: absolute;
+  right: -25px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #b2a7a1;
+  font-size: 18px;
+}
+.assess-step__n {
+  font: 500 11px var(--en);
+  letter-spacing: 0.2em;
+  color: #a38b7e;
+  margin-top: 14px;
+}
+.assess-step h3 {
+  font: 500 16px/1.6 var(--serif);
+  margin: 4px 0 6px;
+}
+.assess-step p {
+  font-size: 12.5px;
+  color: #6f625b;
+  margin: 0;
+  line-height: 1.85;
+}
+
+/* 流れページ */
+.flow-hero h1 {
+  font-size: clamp(26px, 3.4vw, 40px);
+}
+.flow-hero__art {
+  aspect-ratio: 3 / 2;
+}
+.flow-overview-wrap {
+  background: #fff;
+  border-bottom: 1px solid var(--line);
+}
+.flow-overview {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 10px;
+  counter-reset: none;
+}
+.flow-overview a {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 8px;
+  height: 100%;
+  padding: 16px 8px 14px;
+  border: 1px solid var(--line);
+  background: var(--cream);
+  transition: border-color 0.15s;
+}
+.flow-overview a:hover {
+  border-color: var(--taupe);
+}
+.flow-overview__n {
+  font: 500 11px var(--en);
+  letter-spacing: 0.18em;
+  color: #a38b7e;
+}
+.flow-overview__title {
+  font: 500 13.5px/1.55 var(--serif);
+}
+.flow-overview__short {
+  font-size: 11px;
+  color: #82736d;
+  line-height: 1.6;
+}
+
+.flow-steps {
+  padding-top: 24px;
+  padding-bottom: 40px;
+}
+.flow-step {
+  padding: 48px 0;
+  border-bottom: 1px solid var(--line);
+  font-size: 14.5px;
+  color: #4d433f;
+  line-height: 2;
+}
+.flow-step:last-child {
+  border-bottom: 0;
+}
+.flow-step p {
+  margin: 0 0 8px;
+}
+.flow-step__head {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  margin-bottom: 18px;
+}
+.flow-step__n {
+  font: 500 11.5px var(--en);
+  letter-spacing: 0.14em;
+  color: #a38b7e;
+}
+.flow-step__title {
+  font: 500 clamp(19px, 2.2vw, 24px) / 1.6 var(--serif);
+  letter-spacing: 0.04em;
+  margin: 2px 0 0;
+  text-wrap: balance;
+}
+.flow-step__sub {
+  font: 500 15px/1.6 var(--serif);
+  margin: 30px 0 12px;
+  padding-left: 12px;
+  border-left: 2px solid var(--taupe);
+}
+.flow-step__note {
+  font-size: 12.5px;
+  color: #82736d;
+  line-height: 1.9;
+}
+.flow-step__media-row {
+  gap: 32px;
+  align-items: start;
+}
+.flow-step--feature {
+  background: linear-gradient(180deg, #fbf6f3, var(--cream));
+  margin: 0 calc(-1 * var(--gutter));
+  padding-left: var(--gutter);
+  padding-right: var(--gutter);
+}
+.chip-grid {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.chip-grid li {
+  background: #fff;
+  border: 1px solid var(--line);
+  padding: 6px 14px;
+  font-size: 13px;
+  line-height: 1.6;
+}
+.day-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 8px;
+}
+.day-list li {
+  display: flex;
+  gap: 12px;
+  align-items: baseline;
+  background: #fff;
+  border: 1px solid var(--line);
+  padding: 10px 16px;
+  font-size: 14px;
+}
+.day-list__n {
+  color: var(--accent);
+  font-size: 15px;
+}
+.check-list--left {
+  max-width: none;
+  margin: 0 0 8px;
+}
+.followup-plan {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+  margin: 20px 0 0;
+}
+.followup-plan div {
+  background: #fff;
+  border: 1px solid var(--line);
+  padding: 14px 16px;
+  font-size: 13px;
+  line-height: 1.7;
+}
+.followup-plan b {
+  display: block;
+  font: 500 14px var(--serif);
+  color: var(--ink);
+}
+.followup-plan span {
+  color: #6f625b;
+}
+
+@media (max-width: 1024px) {
+  .flow-overview {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 900px) {
+  .reassure-grid {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 12px;
+    margin-top: 32px;
+  }
+  .reassure-card {
+    padding: 26px 20px 22px;
+  }
+  .conversation__grid {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 28px;
+    margin-top: 32px;
+  }
+  .conversation .btn {
+    width: 100%;
+  }
+  .chat__bubble {
+    max-width: 82%;
+    font-size: 13px;
+  }
+  .assess-steps {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 30px;
+  }
+  .assess-step:not(:last-child)::after {
+    content: "↓";
+    right: auto;
+    left: 50%;
+    top: auto;
+    bottom: -27px;
+    transform: translateX(-50%);
+  }
+  .flow-overview {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 8px;
+  }
+  .flow-overview a {
+    display: grid;
+    grid-template-columns: 30px 44px minmax(0, 1fr);
+    grid-template-rows: auto auto;
+    column-gap: 12px;
+    row-gap: 0;
+    align-items: center;
+    text-align: left;
+    padding: 10px 14px;
+  }
+  .flow-overview__n {
+    grid-row: 1 / 3;
+  }
+  .flow-overview .icon-badge {
+    grid-row: 1 / 3;
+  }
+  .flow-step {
+    padding: 38px 0;
+    font-size: 14px;
+  }
+  .flow-step__head {
+    gap: 14px;
+  }
+  .flow-step__head .icon-badge {
+    width: 52px;
+    height: 52px;
+  }
+  .flow-step__head .icon-badge svg {
+    width: 28px;
+    height: 28px;
+  }
+  .followup-plan {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.image-caption {
+  font-size: 11px;
+  color: #8a7b76;
+  margin: 6px 0 0;
+}

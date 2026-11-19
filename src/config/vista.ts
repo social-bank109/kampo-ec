@@ -148,20 +148,38 @@ export const FEE_ROWS: FeeRow[] = [
 ];
 
 // ─────────────────────────────────────────────────────────────
-// 受診の流れ（実際の順序を崩さないこと）
+// 診療体制（未確認の事実は断定しない）
 // ─────────────────────────────────────────────────────────────
-export const FLOW_STEPS = [
-  { n: "01", title: "LINEを友だち追加", body: "公式LINEから、診療の流れや予約方法のご案内を確認します。" },
-  { n: "02", title: "Web予約", body: "希望日時を申請し、確定のご連絡をお待ちください。" },
-  { n: "03", title: "Web問診", body: "肌の状態、月経・体調、既往歴、服薬状況などにご回答いただきます。" },
-  { n: "04", title: "オンライン診療", body: "提携医療機関の医師が、症状と体調を確認します。" },
-  { n: "05", title: "処方の判断", body: "医療用漢方が適するかどうか、処方の可否を医師が判断します。" },
-  { n: "06", title: "決済", body: "処方がある場合はプラン料金、処方なしの場合は診察料をお支払いいただきます。" },
-  { n: "07", title: "発送", body: "処方・決済の完了後、ご自宅へお届けします。初回は原則30日分です。" },
-  { n: "08", title: "再診", body: "約1か月後に再診。継続できる場合は原則3か月ごと・90日分のお届けに移行します。" },
+export const CONSULT_SETUP = {
+  /**
+   * 女性医師の担当を保証できるか。
+   * TODO: BUSINESS_APPROVAL — 提携医療機関に確認。true にすると「女性医師が診察します」系の文言に切り替わる。
+   */
+  femaleDoctorGuaranteed: false,
+  /**
+   * 診察時間の目安（例："10〜15分程度"）。運用で確定するまで null（分数を掲載しない）。
+   * TODO: BUSINESS_APPROVAL
+   */
+  durationLabel: null as string | null,
+};
+
+// ─────────────────────────────────────────────────────────────
+// 受診の流れ（実際の順序を崩さないこと）
+// 初回30日分 → 約1か月後に再診 → 継続時は原則3か月ごと・90日分（利用規約 第17条3項）
+// ─────────────────────────────────────────────────────────────
+export type FlowIcon = "line" | "calendar" | "form" | "video" | "card" | "box" | "repeat";
+
+export const FLOW_STEPS: { n: string; id: string; icon: FlowIcon; title: string; short: string }[] = [
+  { n: "01", id: "step-line", icon: "line", title: "LINE友だち追加", short: "公式LINEから予約の案内へ" },
+  { n: "02", id: "step-booking", icon: "calendar", title: "診療希望日の申請・予約確定", short: "希望日を申請し、日程調整後に確定" },
+  { n: "03", id: "step-questionnaire", icon: "form", title: "Web問診の回答", short: "肌や体調、服薬状況を事前に回答" },
+  { n: "04", id: "step-consultation", icon: "video", title: "オンライン診療", short: "医師が症状・体調を確認し処方を判断" },
+  { n: "05", id: "step-payment", icon: "card", title: "オンライン決済", short: "診療・処方内容と料金を確認して決済" },
+  { n: "06", id: "step-delivery", icon: "box", title: "漢方のお届け", short: "処方された漢方をご自宅へ" },
+  { n: "07", id: "step-followup", icon: "repeat", title: "再診・継続処方", short: "経過や副作用を確認し継続を判断" },
 ];
 
-/** 4ステップ版（ホームの「はじめ方」など簡潔な表示用） */
+/** 4ステップ版（ホームの「受診の流れ」など簡潔な表示用） */
 export const FLOW_SHORT = [
   { n: "01", title: "LINEを追加", body: "公式LINEから案内を確認" },
   { n: "02", title: "予約・Web問診", body: "希望日時の申請と問診への回答" },
@@ -170,47 +188,108 @@ export const FLOW_SHORT = [
 ];
 
 // ─────────────────────────────────────────────────────────────
-// FAQ
+// FAQ（id は計測用の非センシティブな識別子）
 // ─────────────────────────────────────────────────────────────
-export type FaqItem = { q: string; a: string };
+export type FaqItem = { id: string; q: string; a: string };
 
-export const FAQ_ITEMS: FaqItem[] = [
-  {
-    q: "どんな肌悩みを相談できますか？",
-    a: "繰り返す大人ニキビや、生理前に悪化しやすい肌荒れなどのご相談を想定しています。症状によっては、皮膚科での標準的な治療や対面診療が適切な場合もあり、その際は医療機関への受診をご案内します。",
+const FAQ: Record<string, FaqItem> = {
+  makeup: {
+    id: "makeup",
+    q: "オンライン診療では、すっぴんになる必要がありますか？",
+    a: "必ずしもメイクを落とす必要はありません。普段のメイクのままご相談いただけますが、肌の状態を確認するために、医師が必要と判断した場合はメイクを落としての確認や対面診療をご案内することがあります。",
   },
-  {
-    q: "オンラインで診察を受けられますか？",
-    a: "はい。提携医療機関の医師が、オンライン診療で症状・体調・既往歴・服薬状況を確認します。オンラインでの診療が適さないと医師が判断した場合は、対面での受診をご案内します。",
+  camera: {
+    id: "camera",
+    q: "カメラに顔を近づける必要がありますか？",
+    a: "通常のビデオ通話から診察を始めます。肌の状態によっては、医師がカメラの角度や距離の調整をお願いする場合があります。特別な撮影機材は必要ありません。",
   },
-  {
+  online_assessment: {
+    id: "online_assessment",
+    q: "オンラインでも肌の状態を判断できますか？",
+    a: "Web問診やビデオ通話を通じて、症状の経過や肌の状態、体調などを確認します。ただし、オンラインでは確認できない症状もあるため、医師が必要と判断した場合は対面診療をご案内します。",
+  },
+  female_doctor: {
+    id: "female_doctor",
+    q: "女性医師に診察してもらえますか？",
+    a: CONSULT_SETUP.femaleDoctorGuaranteed
+      ? "はい。女性医師が診察を担当します。"
+      : "現在、女性医師による診察をお約束するものではありません。担当医師についてご希望がある場合は、予約の際にご相談ください。",
+  },
+  topics: {
+    id: "topics",
+    q: "どんなことを相談できますか？",
+    a: "繰り返す大人ニキビや肌荒れのほか、月経に伴う体調の変化、冷え、むくみ、便通など、気になっていることを医師にお話しください。症状によっては、皮膚科での標準的な治療や対面診療が適切な場合もあります。",
+  },
+  prescription: {
+    id: "prescription",
+    q: "必ず漢方を処方してもらえますか？",
+    a: "処方の可否は医師が診療のうえ判断します。症状によっては漢方が適さない場合や、皮膚科等の対面診療をおすすめする場合があります。",
+  },
+  duration: {
+    id: "duration",
+    q: "診察時間は何分くらいですか？",
+    a: CONSULT_SETUP.durationLabel
+      ? `目安は${CONSULT_SETUP.durationLabel}です。症状やご相談内容によって前後します。`
+      : "診察時間は、症状やご相談内容によって異なります。",
+  },
+  line_cost: {
+    id: "line_cost",
     q: "LINEを追加すると費用は発生しますか？",
     a: `LINEの友だち追加や予約の時点では費用は発生しません。診療を受けた後、処方がある場合は${PLAN.name}の料金、処方なしの場合は診察料${yen(PLAN.noPrescriptionFee)}（${TAX_LABEL}）がかかります。`,
   },
-  {
+  insurance: {
+    id: "insurance",
     q: "保険は使えますか？",
     a: "本サービスは自由診療のため、公的医療保険は適用されません。",
   },
-  {
-    q: "必ず漢方薬を処方してもらえますか？",
-    a: "いいえ。医師が診療のうえ、医学的に必要かつ適切と判断した場合にのみ処方します。ご希望の漢方が処方されるとは限りません。",
-  },
-  {
+  side_effects: {
+    id: "side_effects",
     q: "副作用はありますか？",
     a: "漢方薬にも副作用があります。発疹・かゆみ、胃部不快感、下痢などのほか、まれに偽アルドステロン症、肝機能障害、間質性肺炎などの重い副作用が起こることがあります。注意点は薬剤ごとに異なるため、診療時に医師が確認します。",
   },
-  {
+  pregnancy: {
+    id: "pregnancy",
     q: "妊娠中・授乳中でも相談できますか？",
     a: "妊娠中・妊娠の可能性がある方・授乳中の方は、必ず問診・診療時にお伝えください。処方できない、または対面での受診をご案内する場合があります。",
   },
-  {
+  other_meds: {
+    id: "other_meds",
     q: "ほかの薬や皮膚科の治療と併用できますか？",
     a: "服用中のお薬、外用薬、サプリメント、通院中の治療は問診で必ずお知らせください。医師が飲み合わせや併用の可否を確認します。現在の皮膚科治療を自己判断で中止しないでください。",
   },
-  {
+  cancel: {
+    id: "cancel",
     q: "予約のキャンセルや解約はできますか？",
     a: `予約の変更・キャンセルは所定の方法（公式LINE等）で手続きできます。診療予定日時の24時間前以降はキャンセル料${yen(PLAN.lateCancelFee)}（${TAX_LABEL}）がかかることがあります。定期プランの変更・休止・解約は${PLAN.changeDeadline}にお手続きください。詳しくは利用規約をご確認ください。`,
   },
+};
+
+/** トップページの FAQ */
+export const FAQ_ITEMS: FaqItem[] = [
+  FAQ.makeup,
+  FAQ.camera,
+  FAQ.online_assessment,
+  FAQ.female_doctor,
+  FAQ.topics,
+  FAQ.prescription,
+  FAQ.line_cost,
+  FAQ.insurance,
+  FAQ.side_effects,
+  FAQ.pregnancy,
+  FAQ.other_meds,
+  FAQ.cancel,
+];
+
+/** 「予約から再診までの流れ」ページの FAQ */
+export const FAQ_FLOW_ITEMS: FaqItem[] = [
+  FAQ.makeup,
+  FAQ.camera,
+  FAQ.online_assessment,
+  FAQ.female_doctor,
+  FAQ.duration,
+  FAQ.prescription,
+  FAQ.line_cost,
+  FAQ.cancel,
 ];
 
 // ─────────────────────────────────────────────────────────────

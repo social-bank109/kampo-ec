@@ -10,8 +10,8 @@ export const NAV_ITEMS = [
   { href: "/#kampo", label: "漢方について" },
   { href: "/pricing", label: "料金" },
   { href: "/check", label: "肌荒れ・体調チェック" },
-  { href: "/#flow", label: "診療の流れ" },
-  { href: "/consult", label: "医師への相談" },
+  { href: "/#online", label: "オンライン診療" },
+  { href: "/consult", label: "予約から再診までの流れ" },
 ];
 
 export function Logo() {
