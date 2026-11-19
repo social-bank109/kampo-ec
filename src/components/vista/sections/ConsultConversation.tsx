@@ -38,7 +38,7 @@ export default function ConsultConversation() {
           id="talk-title"
           eyebrow="YOUR FIRST CONSULTATION"
           title="オンライン診療って、何をするの？"
-          sub="難しい準備は必要ありません。Web問診の内容をもとに、医師が肌のお悩みや体調について確認します。"
+          sub="難しい準備は必要ありません。Web問診の内容をもとに、女性医師が肌のお悩みや体調について確認します。"
         />
         <div className="conversation__grid">
           <div>
@@ -50,7 +50,7 @@ export default function ConsultConversation() {
           <div>
             <ConversationExample />
             <p className="conversation__summary">
-              このように、肌の状態だけでなく、月経・冷え・便通・服薬状況なども確認し、医師が適切な治療を検討します。
+              このように、肌の状態だけでなく、月経・冷え・便通・服薬状況なども確認し、女性医師が適切な治療を検討します。
             </p>
             <FlowLink position="home_conversation" className="btn btn--outline">
               オンライン診療の流れを詳しく見る

@@ -14,9 +14,9 @@ export const SITE = {
   logoSub: "Wellness",
   logoTagline: "MEDICAL KAMPO FOR SKIN",
   url: "https://wellness.vista-group.jp",
-  title: "VISTA Wellness｜繰り返す大人ニキビ・生理前の肌荒れに、医師による美容漢方オンライン診療",
+  title: "VISTA Wellness｜繰り返す大人ニキビ・生理前の肌荒れに、女性医師による美容漢方オンライン診療",
   description:
-    "繰り返す大人ニキビ・生理前の肌荒れに。肌だけでなく、月経や冷え・便通なども確認する、医師による美容漢方オンライン診療。自由診療。診療・処方は提携医療機関の医師が行います。",
+    "繰り返す大人ニキビ・生理前の肌荒れに。肌だけでなく、月経や冷え・便通なども確認する、女性医師による美容漢方オンライン診療。自由診療。診療・処方は提携医療機関の医師が行います。",
   /** 運営会社（診療・処方は行わない） */
   operator: "株式会社Social Bank",
   /**
@@ -70,7 +70,7 @@ export const PLAN = {
   /** 定期プランの変更・休止・解約の締切 — 利用規約 第18条2項 */
   changeDeadline: "次回決済予定日または次回契約更新日の3日前まで",
   includes: [
-    "医師によるオンライン診療（初診・再診）",
+    "女性医師によるオンライン診療（初診・再診）",
     "医師が必要と判断した場合の医療用漢方 1剤",
     "処方薬のご自宅への配送",
   ],
@@ -153,9 +153,10 @@ export const FEE_ROWS: FeeRow[] = [
 export const CONSULT_SETUP = {
   /**
    * 女性医師の担当を保証できるか。
-   * TODO: BUSINESS_APPROVAL — 提携医療機関に確認。true にすると「女性医師が診察します」系の文言に切り替わる。
+   * 2026/11/19 事業責任者の確認により true（女性医師が対応）。
+   * 再診・代診を含め女性医師が担当する体制を維持できなくなった場合は false に戻すこと。
    */
-  femaleDoctorGuaranteed: false,
+  femaleDoctorGuaranteed: true,
   /**
    * 診察時間の目安（例："10〜15分程度"）。運用で確定するまで null（分数を掲載しない）。
    * TODO: BUSINESS_APPROVAL
@@ -173,7 +174,7 @@ export const FLOW_STEPS: { n: string; id: string; icon: FlowIcon; title: string;
   { n: "01", id: "step-line", icon: "line", title: "LINE友だち追加", short: "公式LINEから予約の案内へ" },
   { n: "02", id: "step-booking", icon: "calendar", title: "診療希望日の申請・予約確定", short: "希望日を申請し、日程調整後に確定" },
   { n: "03", id: "step-questionnaire", icon: "form", title: "Web問診の回答", short: "肌や体調、服薬状況を事前に回答" },
-  { n: "04", id: "step-consultation", icon: "video", title: "オンライン診療", short: "医師が症状・体調を確認し処方を判断" },
+  { n: "04", id: "step-consultation", icon: "video", title: "オンライン診療", short: "女性医師が症状・体調を確認し処方を判断" },
   { n: "05", id: "step-payment", icon: "card", title: "オンライン決済", short: "診療・処方内容と料金を確認して決済" },
   { n: "06", id: "step-delivery", icon: "box", title: "漢方のお届け", short: "処方された漢方をご自宅へ" },
   { n: "07", id: "step-followup", icon: "repeat", title: "再診・継続処方", short: "経過や副作用を確認し継続を判断" },
@@ -183,7 +184,7 @@ export const FLOW_STEPS: { n: string; id: string; icon: FlowIcon; title: string;
 export const FLOW_SHORT = [
   { n: "01", title: "LINEを追加", body: "公式LINEから案内を確認" },
   { n: "02", title: "予約・Web問診", body: "希望日時の申請と問診への回答" },
-  { n: "03", title: "オンライン診療", body: "医師が症状・体調を確認し処方を判断" },
+  { n: "03", title: "オンライン診療", body: "女性医師が症状・体調を確認し処方を判断" },
   { n: "04", title: "決済・お届け", body: "処方がある場合に決済・発送" },
 ];
 
@@ -212,7 +213,7 @@ const FAQ: Record<string, FaqItem> = {
     id: "female_doctor",
     q: "女性医師に診察してもらえますか？",
     a: CONSULT_SETUP.femaleDoctorGuaranteed
-      ? "はい。女性医師が診察を担当します。"
+      ? "はい。VISTA Wellnessでは、女性医師が診察を担当します。肌の悩みや月経など女性特有の体調についても、安心してご相談ください。"
       : "現在、女性医師による診察をお約束するものではありません。担当医師についてご希望がある場合は、予約の際にご相談ください。",
   },
   topics: {

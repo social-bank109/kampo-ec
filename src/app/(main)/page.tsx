@@ -34,8 +34,8 @@ const CONCERNS = [
 
 const BENEFITS = [
   {
-    t: "医師による診療",
-    d: "提携医療機関の医師が、肌の症状と体調をオンラインで確認。漢方が適するかどうかも含めて判断します。",
+    t: "女性医師による診療",
+    d: "提携医療機関の女性医師が、肌の症状と体調をオンラインで確認。漢方が適するかどうかも含めて判断します。",
     icon: (
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
         <rect x="3" y="4" width="18" height="14" rx="2" />
@@ -84,7 +84,7 @@ export default function HomePage() {
           <p className="hero__desc">
             繰り返す大人ニキビ・生理前の肌荒れに。
             <br />
-            肌だけでなく、月経や冷え・便通なども確認する、医師による美容漢方オンライン診療。
+            肌だけでなく、月経や冷え・便通なども確認する、女性医師による美容漢方オンライン診療。
           </p>
           <p className="hero__price">
             {PLAN.name} 月額<b>¥{price}</b>（{TAX_LABEL}）
@@ -104,7 +104,7 @@ export default function HomePage() {
       <div className="trust">
         <ul className="trust__inner">
           <li className="trust__item">
-            <i aria-hidden="true">✧</i>医師が診療のうえ判断
+            <i aria-hidden="true">✧</i>女性医師が診療のうえ判断
           </li>
           <li className="trust__item">
             <i aria-hidden="true">✧</i>必要時に医療用漢方

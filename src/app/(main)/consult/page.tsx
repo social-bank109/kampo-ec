@@ -96,7 +96,7 @@ export default function FlowPage() {
                 ひとつずつご案内します。
               </h1>
               <p className="sub">
-                はじめてのオンライン診療でも大丈夫。LINEでの予約から医師の診察、お薬のお届け、再診までの流れをご紹介します。
+                はじめてのオンライン診療でも大丈夫。LINEでの予約から女性医師の診察、お薬のお届け、再診までの流れをご紹介します。
               </p>
               <div className="cta-stack cta-stack--left" style={{ marginTop: 24 }}>
                 <LineCTA position="flow_hero" className="btn--wide" />
@@ -181,7 +181,7 @@ export default function FlowPage() {
             </div>
             <div>
               <p>予約した日時に、スマートフォンやパソコンからオンライン診療に参加します。</p>
-              <p>事前のWeb問診をもとに、医師が症状の経過や体調について確認します。</p>
+              <p>事前のWeb問診をもとに、女性医師が症状の経過や体調について確認します。</p>
               <p>肌の状態についても必要に応じて画面越しに確認し、医師が適切な診療・治療方針を判断します。</p>
             </div>
           </div>

@@ -4,7 +4,7 @@ import LineIcon, { type LineIconName } from "../lineIcons";
 
 const STEPS: { icon: LineIconName; title: string; body: string }[] = [
   { icon: "form", title: "Web問診", body: "症状の経過や生活習慣、服薬状況などを確認" },
-  { icon: "video", title: "ビデオ診察", body: "医師が直接お話を伺い、必要に応じて視診" },
+  { icon: "video", title: "ビデオ診察", body: "女性医師が直接お話を伺い、必要に応じて視診" },
   { icon: "judge", title: "医師による判断", body: "処方の可否を判断し、必要な場合は対面診療を案内" },
 ];
 
