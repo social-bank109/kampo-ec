@@ -62,7 +62,7 @@ export const VISTA_ASSETS = {
   },
   flowHero: {
     // 「予約から再診までの流れ」ページのFV（女性が自宅でPCを利用するイラスト）
-    // 未配備の間は doctor-consultation.webp を表示
+    // 未配備時は doctor-consultation.webp を表示（2026/11/19 配置済み）
     src: `${VISTA_IMAGE_DIR}/flow-hero.webp`,
     width: 1536,
     height: 1024,
@@ -73,8 +73,8 @@ export const VISTA_ASSETS = {
   flowDelivery: {
     // STEP 6「漢方のお届け」（薬包・お届けのイラスト）
     src: `${VISTA_IMAGE_DIR}/flow-delivery.webp`,
-    width: 1200,
-    height: 900,
+    width: 1448,
+    height: 1086,
     alt: "ご自宅に届いた漢方の薬包のイラスト",
     label: "DELIVERY — flow-delivery",
   },
