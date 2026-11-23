@@ -315,7 +315,8 @@ picture {
   position: fixed;
   inset: var(--header-h) 0 0 0;
   background: var(--cream);
-  z-index: 39;
+  z-index: 50; /* スマホ固定CTA（45）より上 */
+  overscroll-behavior: contain;
   padding: 18px 22px calc(32px + env(safe-area-inset-bottom, 0px));
   overflow-y: auto;
 }

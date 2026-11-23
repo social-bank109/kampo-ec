@@ -44,34 +44,44 @@ export default function Header() {
   }, [open]);
 
   return (
-    <header className="site-header">
-      <Link href="/" className="logo" aria-label={`${SITE.name} トップへ`}>
-        <Logo />
-      </Link>
-      <nav className="nav" aria-label="メインナビゲーション">
-        {NAV_ITEMS.map((n) => (
-          <Link key={n.href} href={n.href} aria-current={pathname === n.href ? "page" : undefined}>
-            {n.label}
-          </Link>
-        ))}
-        <LineCTA position="header" size="small" />
-      </nav>
-      <button
-        type="button"
-        className="menu-btn"
-        aria-expanded={open}
-        aria-controls="mobile-menu"
-        aria-label={open ? "メニューを閉じる" : "メニューを開く"}
-        onClick={() => setOpen((v) => !v)}
-      >
-        {open ? <CloseIcon /> : <MenuIcon />}
-      </button>
+    <>
+      <header className="site-header">
+        <Link href="/" className="logo" aria-label={`${SITE.name} トップへ`}>
+          <Logo />
+        </Link>
+        <nav className="nav" aria-label="メインナビゲーション">
+          {NAV_ITEMS.map((n) => (
+            <Link
+              key={n.href}
+              href={n.href}
+              aria-current={pathname === n.href ? "page" : undefined}
+            >
+              {n.label}
+            </Link>
+          ))}
+          <LineCTA position="header" size="small" />
+        </nav>
+        <button
+          type="button"
+          className="menu-btn"
+          aria-expanded={open}
+          aria-controls="mobile-menu"
+          aria-label={open ? "メニューを閉じる" : "メニューを開く"}
+          onClick={() => setOpen((v) => !v)}
+        >
+          {open ? <CloseIcon /> : <MenuIcon />}
+        </button>
+      </header>
+      {/* メニューは header の外に置く（header の backdrop-filter が fixed 要素の基準になり、
+        パネルがヘッダー内に切り取られてしまうため） */}
       {open && (
         <div id="mobile-menu" className="mobile-menu">
           <nav aria-label="メニュー">
             <ul>
               <li>
-                <Link href="/">ホーム<span aria-hidden="true">→</span></Link>
+                <Link href="/">
+                  ホーム<span aria-hidden="true">→</span>
+                </Link>
               </li>
               {NAV_ITEMS.map((n) => (
                 <li key={n.href}>
@@ -94,11 +104,14 @@ export default function Header() {
             </ul>
           </nav>
           <LineCTA position="header" />
-          <p className="small-note" style={{ textAlign: "center", marginTop: 10 }}>
+          <p
+            className="small-note"
+            style={{ textAlign: "center", marginTop: 10 }}
+          >
             LINE追加だけでは、診療の予約・決済は確定しません。
           </p>
         </div>
       )}
-    </header>
+    </>
   );
 }
