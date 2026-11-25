@@ -115,7 +115,18 @@ function KampoDetail({ id }: { id: string }) {
         {/* 3. 正式な効能・効果 */}
         <section className="detail-section">
           <h2>効能・効果</h2>
-          {k.officialIndications ? <p>{k.officialIndications}</p> : <p className="detail-pending">{KAMPO_PENDING_NOTE}</p>}
+          {k.officialIndications ? (
+            <>
+              {k.officialIndications.map((t) => (
+                <p key={t} style={{ marginBottom: 10 }}>
+                  {t}
+                </p>
+              ))}
+              {k.indicationNote && <p className="detail-note">※{k.indicationNote}</p>}
+            </>
+          ) : (
+            <p className="detail-pending">{KAMPO_PENDING_NOTE}</p>
+          )}
         </section>
 
         {/* 4. どのような症状・体質で検討されるか */}
@@ -131,17 +142,21 @@ function KampoDetail({ id }: { id: string }) {
         <section className="detail-section">
           <h2>主な注意事項・副作用</h2>
           {k.productCautions ? (
-            <ul>
+            <>
               {k.productCautions.map((t) => (
-                <li key={t}>{t}</li>
+                <p key={t} style={{ marginBottom: 10 }}>
+                  {t}
+                </p>
               ))}
-            </ul>
+            </>
           ) : (
-            <p className="detail-pending">{KAMPO_PENDING_NOTE}</p>
+            <>
+              <p className="detail-pending">{KAMPO_PENDING_NOTE}</p>
+              <p style={{ marginTop: 12 }}>{KAMPO_SAFETY_NOTE}</p>
+            </>
           )}
-          <p style={{ marginTop: 12 }}>{KAMPO_SAFETY_NOTE}</p>
-          <p style={{ marginTop: 10 }}>
-            妊娠中・妊娠の可能性がある方、授乳中の方、服用中のお薬がある方は、必ず問診・診療時にお伝えください。服用後に気になる症状や体調の変化があった場合は、服用を続けずに医師・薬剤師へご相談ください。
+          <p className="detail-note" style={{ marginTop: 4 }}>
+            服用後に気になる症状や体調の変化があった場合は、自己判断で続けずに医師・薬剤師へご相談ください。
           </p>
         </section>
 

@@ -2637,3 +2637,8 @@ picture {
   font-size: 13px !important;
   color: #6f625b !important;
 }
+.detail-note {
+  font-size: 12.5px !important;
+  color: #82736d !important;
+  line-height: 1.9 !important;
+}

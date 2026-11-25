@@ -35,11 +35,11 @@
 | 漢方 | ファイル名 | 状態 |
 |---|---|---|
 | 十味敗毒湯 | `jyumihaidokuto.webp` | 表示中 |
-| 温清飲 | **`unseiin.webp`** | **未配置（仮枠：「イメージ」の薬包イラスト）** |
+| 温清飲 | `unseiin.webp` | 表示中（2026/11/25 配置） |
 | 防風通聖散 | `bofutsushosan.jpg` | 表示中（旧サイト用にアップロード済みの画像） |
 | 加味逍遙散 | `kamishoyosan.jpg` | 表示中 |
 | 当帰芍薬散 | `tokishakuyakusan.jpg` | 表示中 |
-| 桂枝茯苓丸加薏苡仁 | **`keishibukuryogankayokuinin.webp`** | **未配置（仮枠）**。※`keishibukuryogan.jpg`（桂枝茯苓丸）とは別の画像 |
+| 桂枝茯苓丸加薏苡仁 | `keishibukuryogankayokuinin.webp` | 表示中（2026/11/25 配置）。※`keishibukuryogan.jpg`（桂枝茯苓丸）とは別の画像 |
 
 推奨：正方形 840×840 以上、背景は薄いグレー（#eef0f3 前後）または白。カードでは切らずに全体を表示します。
 
