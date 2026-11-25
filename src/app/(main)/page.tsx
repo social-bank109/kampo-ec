@@ -3,8 +3,10 @@ import {
   DISCLOSURE,
   FAQ_ITEMS,
   FLOW_SHORT,
+  CONCEPT,
+  DOCTOR_PROFILE,
   KAMPO,
-  KAMPO_GROUPS,
+  KAMPO_SECTION,
   KAMPO_SAFETY_NOTE,
   LINE_CTA_NOTE,
   PLAN,
@@ -170,12 +172,16 @@ export default function HomePage() {
           <h2 className="section-title" id="approach-title">
             肌だけでなく、
             <br />
-            体調にも目を向ける。
+            心と身体の状態にも
+            <br />
+            目を向ける。
           </h2>
-          <p className="sub">
-            ニキビや肌荒れの背景は、人によって異なります。VISTA
-            Wellnessでは、肌の症状に加えて月経・冷え・便通・服薬状況なども問診で確認し、医師が漢方治療の適否を判断します。
-          </p>
+          {CONCEPT.paragraphs.map((t) => (
+            <p className="sub" key={t} style={{ marginBottom: 8 }}>
+              {t}
+            </p>
+          ))}
+          <p className="sub">{DOCTOR_PROFILE.publish ? CONCEPT.withSpecialty : CONCEPT.withoutSpecialty}</p>
           <ol className="approach__steps">
             <li>
               <strong>01</strong>
@@ -183,7 +189,7 @@ export default function HomePage() {
             </li>
             <li>
               <strong>02</strong>
-              <span>月経周期・冷え・便通など、あわせて気になる不調も確認</span>
+              <span>PMSなど月経に伴う不調、冷え・便通・睡眠・ストレスも確認</span>
             </li>
             <li>
               <strong>03</strong>
@@ -234,28 +240,19 @@ export default function HomePage() {
               eyebrow="FORMULATIONS"
               title={
                 <>
-                  医師が、症状と体調に合わせて。
+                  肌と心身の状態に合わせて選ぶ、
                   <br />
-                  医療用漢方という選択肢。
+                  6つの医療用漢方。
                 </>
               }
-              sub="VISTA Wellnessで取り扱っている6つの医療用漢方をご紹介します。肌の状態や月経・冷えなどの症状、服薬状況を踏まえ、処方の必要性は医師が判断します。"
+              sub={KAMPO_SECTION.lead}
             />
           </div>
-          {KAMPO_GROUPS.map((g) => (
-            <div className="formulary__group" key={g.id}>
-              <div className="group-heading">
-                <h3>{g.title}</h3>
-                <small>{g.en}</small>
-              </div>
-              <p className="group-lead">{g.lead}</p>
-              <div className="kampo-grid">
-                {KAMPO.filter((k) => k.group === g.id).map((k, i) => (
-                  <KampoCard key={k.id} k={k} index={i} />
-                ))}
-              </div>
-            </div>
-          ))}
+          <div className="kampo-grid formulary__grid">
+            {KAMPO.map((k, i) => (
+              <KampoCard key={k.id} k={k} index={i} />
+            ))}
+          </div>
           <div className="kampo-message">
             <div className="kampo-message__icon" aria-hidden="true">
               ✳

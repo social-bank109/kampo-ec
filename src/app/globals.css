@@ -2599,3 +2599,41 @@ picture {
   color: #8a7b76;
   margin: 6px 0 0;
 }
+
+/* 漢方カード：主な紹介テーマ */
+.kampo-theme-label {
+  display: block;
+  font-size: 10.5px;
+  letter-spacing: 0.08em;
+  color: #a08f88;
+  margin-bottom: 2px;
+}
+/* 名前が長い処方（桂枝茯苓丸加薏苡仁）でも崩れないように */
+.kampo-body h4,
+.kampo-sachet b {
+  overflow-wrap: anywhere;
+}
+.kampo-sachet--long b {
+  font-size: 12.5px;
+  line-height: 1.35;
+}
+@media (max-width: 900px) {
+  .kampo-sachet--long b {
+    font-size: 10.5px;
+  }
+}
+.formulary__grid {
+  margin-top: 48px;
+}
+@media (max-width: 900px) {
+  .formulary__grid {
+    margin-top: 32px;
+  }
+}
+.detail-pending {
+  background: #f6f3f0;
+  border: 1px dashed #d9cdc5;
+  padding: 12px 16px;
+  font-size: 13px !important;
+  color: #6f625b !important;
+}

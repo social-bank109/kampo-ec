@@ -2,10 +2,10 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import {
+  ARCHIVED_KAMPO,
   KAMPO,
   KAMPO_DOCTOR_NOTE,
-  KAMPO_GROUPS,
-  KAMPO_PLANNED_LABEL,
+  KAMPO_PENDING_NOTE,
   KAMPO_SAFETY_NOTE,
   LINE_CTA_NOTE,
   findKampo,
@@ -18,70 +18,84 @@ import DisclosureNotice from "@/components/vista/DisclosureNotice";
 
 export const dynamicParams = false;
 
-/** 新6剤 + 旧サイトで公開していた漢方ページ（URLを維持するため削除しない） */
+/**
+ * 確定6剤 + 旧ページ（URLを維持するため削除しない。noindex・「現在の処方ラインナップ外」の注記）
+ */
 export function generateStaticParams() {
-  const ids = new Set([...KAMPO.map((k) => k.id), ...MEDICINES.map((m) => m.id)]);
+  const ids = new Set([...KAMPO.map((k) => k.id), ...ARCHIVED_KAMPO.map((k) => k.id), ...MEDICINES.map((m) => m.id)]);
   return [...ids].map((id) => ({ id }));
+}
+
+function archivedInfo(id: string) {
+  const a = ARCHIVED_KAMPO.find((x) => x.id === id);
+  if (a) return { name: a.name, reading: a.reading, medicine: undefined };
+  const m = MEDICINES.find((x) => x.id === id);
+  if (m) return { name: m.name, reading: m.reading, medicine: m };
+  return null;
 }
 
 export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
   const { id } = await params;
   const k = findKampo(id);
-  if (k) return { title: `${k.name}（${k.reading}）`, description: `${k.name}について。${k.summary}処方の可否は医師が判断します。` };
-  const m = MEDICINES.find((x) => x.id === id);
-  if (!m) return {};
-  // 旧コンセプト（睡眠・不安等）のページは残すが、検索インデックス対象から外す
-  return { title: `${m.name}（${m.reading}）`, robots: { index: false, follow: true } };
+  if (k)
+    return {
+      title: `${k.name}（${k.reading}）`,
+      description: `${k.name}（${k.reading}）について。主な紹介テーマ：${k.theme}。処方の可否は医師が診療のうえ判断します。`,
+    };
+  const a = archivedInfo(id);
+  if (!a) return {};
+  // 現在の処方ラインナップ外のページは残すが、検索インデックス対象から外す
+  return { title: `${a.name}（${a.reading}）`, robots: { index: false, follow: true } };
 }
 
 export default async function ProductPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  const k = findKampo(id);
-  if (k) return <KampoDetail id={id} />;
-  const m = MEDICINES.find((x) => x.id === id);
-  if (!m) notFound();
-  return <LegacyDetail id={id} />;
+  if (findKampo(id)) return <KampoDetail id={id} />;
+  if (archivedInfo(id)) return <ArchivedDetail id={id} />;
+  notFound();
+}
+
+function Crumbs({ name }: { name: string }) {
+  return (
+    <nav aria-label="パンくずリスト">
+      <ol className="breadcrumb">
+        <li>
+          <Link href="/">ホーム</Link>
+        </li>
+        <li>
+          <span aria-hidden="true">/ </span>
+          <Link href="/#kampo">医療用漢方</Link>
+        </li>
+        <li>
+          <span aria-hidden="true">/ </span>
+          <span aria-current="page">{name}</span>
+        </li>
+      </ol>
+    </nav>
+  );
 }
 
 function KampoDetail({ id }: { id: string }) {
   const k = findKampo(id)!;
-  const group = KAMPO_GROUPS.find((g) => g.id === k.group)!;
   return (
     <SiteShell>
+      {/* 1. 処方名・読み方 */}
       <section className="page-hero page-hero--plain">
         <div className="container">
-          <nav aria-label="パンくずリスト">
-            <ol className="breadcrumb">
-              <li>
-                <Link href="/">ホーム</Link>
-              </li>
-              <li>
-                <span aria-hidden="true">/ </span>
-                <Link href="/#kampo">医療用漢方</Link>
-              </li>
-              <li>
-                <span aria-hidden="true">/ </span>
-                <span aria-current="page">{k.name}</span>
-              </li>
-            </ol>
-          </nav>
+          <Crumbs name={k.name} />
           <div className="detail-hero" style={{ marginTop: 16 }}>
             <div>
               <div className="kampo-meta">
-                <span>{group.en}</span>
-                {k.makerNumber && <span>{k.makerNumber}</span>}
+                <span>{k.category}</span>
+                {k.maker && <span>{k.maker}</span>}
                 <span className="badge">{KAMPO_DOCTOR_NOTE}</span>
-                {k.status === "planned" && <span className="badge badge--planned">{KAMPO_PLANNED_LABEL}</span>}
               </div>
-              <h1 style={{ marginBottom: 4 }}>{k.name}</h1>
+              <h1 style={{ marginBottom: 4, overflowWrap: "anywhere" }}>{k.name}</h1>
               <div className="kampo-kana" style={{ fontSize: 13 }}>
                 {k.reading}
               </div>
               <p className="sub" style={{ marginTop: 12 }}>
-                {k.summary}
-              </p>
-              <p className="small-note" style={{ marginTop: 10 }}>
-                {group.lead}
+                主な紹介テーマ：{k.theme}
               </p>
             </div>
             <div className="detail-hero__art">
@@ -92,47 +106,61 @@ function KampoDetail({ id }: { id: string }) {
       </section>
 
       <div className="container container--narrow" style={{ paddingTop: 24, paddingBottom: 40 }}>
-        {k.status === "planned" && (
-          <div className="notice" style={{ margin: "16px 0 8px" }}>
-            <strong>現在、導入準備中です</strong>
-            <p>
-              この漢方は取り扱い開始に向けて準備中のため、現時点では処方できません。
-            </p>
-          </div>
-        )}
+        {/* 2. 処方の概要 */}
         <section className="detail-section">
-          <h2>診療時に医師が確認する主なポイント</h2>
-          <ul>
-            {k.checkPoints.map((t) => (
-              <li key={t}>{t}</li>
-            ))}
-          </ul>
-          <p className="small-note" style={{ marginTop: 8 }}>
-            ※一例です。症状・体質・既往歴・服薬状況・妊娠の可能性などを確認のうえ、処方の可否を医師が判断します。
-          </p>
+          <h2>処方の概要</h2>
+          <p>{k.overview}</p>
         </section>
+
+        {/* 3. 正式な効能・効果 */}
         <section className="detail-section">
-          <h2>特に注意が必要な方</h2>
-          <ul>
-            {k.cautions.map((t) => (
-              <li key={t}>{t}</li>
-            ))}
-            <li>妊娠中・妊娠の可能性がある方、授乳中の方</li>
-          </ul>
+          <h2>効能・効果</h2>
+          {k.officialIndications ? <p>{k.officialIndications}</p> : <p className="detail-pending">{KAMPO_PENDING_NOTE}</p>}
         </section>
+
+        {/* 4. どのような症状・体質で検討されるか */}
         <section className="detail-section">
-          <h2>副作用・リスク</h2>
-          <p>{KAMPO_SAFETY_NOTE}</p>
+          <h2>どのような悩みで検討されるか</h2>
+          <p>主な紹介テーマ：{k.theme}</p>
           <p style={{ marginTop: 10 }}>
-            服用後に気になる症状や体調の変化があった場合は、服用を続けずに医師・薬剤師へご相談ください。
+            実際には、肌の状態に加えて、PMS（月経前症候群）など月経に伴う不調、冷え、便通、睡眠、ストレス、既往歴・服薬状況などを確認し、この漢方が適するかどうかを医師が判断します。同じ悩みでも、処方されない場合や別の処方が検討される場合があります。
           </p>
         </section>
+
+        {/* 5. 主な注意事項・副作用 */}
         <section className="detail-section">
-          <h2>このページについて</h2>
-          <p>
-            医療用漢方に関する一般的な情報提供を目的としたページです。効能・効果、用法・用量、注意事項は、処方される製品の添付文書に基づき医師・薬剤師が説明します。掲載内容は効果や治癒を保証するものではありません。皮膚科の標準治療や対面診療が適切な場合もあります。
+          <h2>主な注意事項・副作用</h2>
+          {k.productCautions ? (
+            <ul>
+              {k.productCautions.map((t) => (
+                <li key={t}>{t}</li>
+              ))}
+            </ul>
+          ) : (
+            <p className="detail-pending">{KAMPO_PENDING_NOTE}</p>
+          )}
+          <p style={{ marginTop: 12 }}>{KAMPO_SAFETY_NOTE}</p>
+          <p style={{ marginTop: 10 }}>
+            妊娠中・妊娠の可能性がある方、授乳中の方、服用中のお薬がある方は、必ず問診・診療時にお伝えください。服用後に気になる症状や体調の変化があった場合は、服用を続けずに医師・薬剤師へご相談ください。
           </p>
         </section>
+
+        {/* 6. オンライン診療での処方について */}
+        <section className="detail-section">
+          <h2>オンライン診療での処方について</h2>
+          <p>
+            この漢方は、ご希望を伝えれば処方されるものではありません。Web問診とオンライン診療で医師が状態を確認し、処方の可否と内容を判断します。オンラインでは十分に確認できない場合や、皮膚科の標準治療・対面診療が適切な場合は、医療機関への受診をご案内します。
+          </p>
+          <p style={{ marginTop: 10 }}>
+            料金については
+            <Link className="text-link" href="/pricing">
+              料金ページ
+            </Link>
+            をご確認ください。
+          </p>
+        </section>
+
+        {/* 7. CTA */}
         <div className="cta-stack" style={{ marginTop: 16 }}>
           <LineCTA position="detail" className="btn--wide" />
           <p className="small-note" style={{ margin: 0 }}>
@@ -148,66 +176,50 @@ function KampoDetail({ id }: { id: string }) {
   );
 }
 
-function LegacyDetail({ id }: { id: string }) {
-  const m = MEDICINES.find((x) => x.id === id)!;
+function ArchivedDetail({ id }: { id: string }) {
+  const a = archivedInfo(id)!;
+  const m = a.medicine;
   return (
     <SiteShell sticky={false}>
       <section className="page-hero page-hero--plain">
         <div className="container">
           <div className="eyebrow">MEDICAL KAMPO — ARCHIVE</div>
-          <h1 style={{ marginBottom: 4 }}>{m.name}</h1>
+          <h1 style={{ marginBottom: 4 }}>{a.name}</h1>
           <div className="kampo-kana" style={{ fontSize: 13 }}>
-            {m.reading}
+            {a.reading}
           </div>
         </div>
       </section>
       <div className="container container--narrow" style={{ paddingTop: 24, paddingBottom: 48 }}>
         <div className="notice" style={{ margin: "16px 0 8px" }}>
-          <strong>このページは以前の掲載内容です</strong>
+          <strong>この漢方は、現在のVISTA Wellnessの処方ラインナップには含まれていません</strong>
           <p>
-            VISTA Wellnessは現在、繰り返す大人ニキビ・生理前の肌荒れを中心とした美容漢方オンライン診療としてご案内しています。この漢方の現在の取り扱いや処方の可否は、診療時に医師にご確認ください。料金は
-            <Link className="text-link" href="/pricing">
-              料金ページ
+            このページは以前の掲載内容です。現在取り扱っている医療用漢方は
+            <Link className="text-link" href="/#kampo">
+              こちら
             </Link>
-            をご覧ください。
+            をご覧ください。処方の可否・内容は、診療のうえ医師が判断します。
           </p>
         </div>
-        <section className="detail-section">
-          <h2>概要</h2>
-          <p>{m.description}</p>
-        </section>
-        {m.doctorConsiders && (
-          <section className="detail-section">
-            <h2>医師が検討するケース（例）</h2>
-            <ul>
-              {m.doctorConsiders.map((t) => (
-                <li key={t}>{t}</li>
-              ))}
-            </ul>
-          </section>
+        {m && (
+          <>
+            <section className="detail-section">
+              <h2>概要（以前の掲載内容）</h2>
+              <p>{m.description}</p>
+            </section>
+            <section className="detail-section">
+              <h2>副作用・リスク</h2>
+              <p>漢方薬でも、体質や併用薬によって副作用が生じることがあります。主なものとして、以下が知られています。</p>
+              <ul style={{ marginTop: 8 }}>
+                {SIDE_EFFECTS_GENERAL.map((s) => (
+                  <li key={s}>{s}</li>
+                ))}
+              </ul>
+            </section>
+          </>
         )}
-        {m.cautionCases && (
-          <section className="detail-section">
-            <h2>注意が必要なケース</h2>
-            <ul>
-              {m.cautionCases.map((t) => (
-                <li key={t}>{t}</li>
-              ))}
-              <li>妊娠中・授乳中の方は、必ず医師にご相談ください。</li>
-            </ul>
-          </section>
-        )}
-        <section className="detail-section">
-          <h2>副作用・リスク</h2>
-          <p>漢方薬でも、体質や併用薬によって副作用が生じることがあります。主なものとして、以下が知られています。</p>
-          <ul style={{ marginTop: 8 }}>
-            {SIDE_EFFECTS_GENERAL.map((s) => (
-              <li key={s}>{s}</li>
-            ))}
-          </ul>
-        </section>
         <p className="small-note" style={{ marginTop: 12 }}>
-          実際の処方は、提携医療機関の医師が診療のうえ判断します。掲載内容は特定の疾患の診断・治療・治癒を保証するものではありません。
+          掲載内容は特定の疾患の診断・治療・治癒を保証するものではありません。
         </p>
         <p style={{ marginTop: 20 }}>
           <Link className="text-link" href="/">

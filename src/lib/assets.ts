@@ -16,6 +16,20 @@ export function publicFileExists(publicPath: string | undefined): boolean {
   }
 }
 
+const EXTS = [".webp", ".jpg", ".jpeg", ".png"];
+
+/**
+ * 指定パスが無ければ、同じファイル名で拡張子だけ違うもの（.webp/.jpg/.jpeg/.png）を探す。
+ * 見つかった public パスを返す（無ければ null）。
+ */
+export function findPublicFile(publicPath: string | undefined): string | null {
+  if (!publicPath) return null;
+  if (publicFileExists(publicPath)) return publicPath;
+  const base = publicPath.replace(/\.[a-z0-9]+$/i, "");
+  for (const ext of EXTS) if (publicFileExists(base + ext)) return base + ext;
+  return null;
+}
+
 export function resolveAsset(key: VistaAssetKey): {
   asset: (typeof VISTA_ASSETS)[VistaAssetKey] & { mobileSrc?: string };
   hasMain: boolean;
@@ -24,13 +38,20 @@ export function resolveAsset(key: VistaAssetKey): {
 } {
   const a = VISTA_ASSETS[key] as (typeof VISTA_ASSETS)[VistaAssetKey] & { mobileSrc?: string };
   const held = "hold" in a && Boolean(a.hold);
-  const hasMain = !held && publicFileExists(a.src);
-  const hasMobile = !held && publicFileExists(a.mobileSrc);
+  const mainPath = held ? null : findPublicFile(a.src);
+  const mobilePath = held ? null : findPublicFile(a.mobileSrc);
+  const hasMain = Boolean(mainPath);
+  const hasMobile = Boolean(mobilePath);
   const fb = "fallback" in a ? (a.fallback as VistaAssetKey | undefined) : undefined;
   if (!hasMain && !hasMobile && fb && fb !== key && fb in VISTA_ASSETS) {
     // 代替アセットを表示（alt は本来の用途のものを維持）
     const r = resolveAsset(fb);
     if (r.available) return { ...r, asset: { ...r.asset, alt: a.alt } };
   }
-  return { asset: a, hasMain, hasMobile, available: hasMain || hasMobile };
+  return {
+    asset: { ...a, src: mainPath ?? a.src, mobileSrc: mobilePath ?? a.mobileSrc },
+    hasMain,
+    hasMobile,
+    available: hasMain || hasMobile,
+  };
 }

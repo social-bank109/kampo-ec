@@ -108,6 +108,33 @@ export const VISTA_ASSETS = {
     alt: "十味敗毒湯のイメージ",
     label: "十味敗毒湯",
   },
+  kampoUnseiin: {
+    // 2026/11/25 追加（確定6剤）。画像未配置の間はプレースホルダー
+    src: "/images/kampo/unseiin.webp",
+    width: 840,
+    height: 840,
+    fit: "contain",
+    alt: "温清飲のイメージ",
+    label: "温清飲 — kampo/unseiin",
+  },
+  kampoBofutsushosan: {
+    // 2026/11/25 追加（確定6剤）。旧サイト用にアップロード済みの画像を使用
+    src: "/images/kampo/bofutsushosan.jpg",
+    width: 840,
+    height: 840,
+    fit: "contain",
+    alt: "防風通聖散のイメージ",
+    label: "防風通聖散 — kampo/bofutsushosan",
+  },
+  kampoKeishiBukuryoganKaYokuinin: {
+    // 2026/11/25 追加（確定6剤）。桂枝茯苓丸（keishibukuryogan）とは別の画像を用意すること
+    src: "/images/kampo/keishibukuryogankayokuinin.webp",
+    width: 840,
+    height: 840,
+    fit: "contain",
+    alt: "桂枝茯苓丸加薏苡仁のイメージ",
+    label: "桂枝茯苓丸加薏苡仁 — kampo/keishibukuryogankayokuinin",
+  },
   kampoKeishiBukuryogan: {
     // 漢方の画像はアップロード済みの public/images/kampo/ を使用
     src: "/images/kampo/keishibukuryogan.jpg",

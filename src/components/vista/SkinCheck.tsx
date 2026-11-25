@@ -89,10 +89,22 @@ const STEPS: Step[] = [
           { id: "na", label: "あてはまらない（月経がない等）" },
         ],
       },
+      {
+        id: "pms",
+        label: "生理前に、イライラ・気分の落ち込み・むくみなどの不調を感じますか？",
+        hint: "PMS（月経前症候群）に関連する不調があるかどうかの目安です。",
+        multi: false,
+        options: [
+          { id: "often", label: "毎月のように感じる" },
+          { id: "sometimes", label: "ときどき感じる" },
+          { id: "no", label: "あまり感じない" },
+          { id: "na", label: "あてはまらない（月経がない等）" },
+        ],
+      },
     ],
   },
   {
-    title: "冷え・のぼせ・むくみ・便通",
+    title: "冷え・むくみ・便通・体重",
     questions: [
       {
         id: "body",
@@ -104,6 +116,7 @@ const STEPS: Step[] = [
           { id: "hot", label: "のぼせ・ほてり" },
           { id: "swelling", label: "むくみ" },
           { id: "constipation", label: "便秘がち" },
+          { id: "weight", label: "体重の増加・体型が気になる" },
           { id: "none", label: "特にない", exclusive: true },
         ],
       },
@@ -186,24 +199,37 @@ function evaluate(a: Answers) {
   const has = (q: string, id: string) => (a[q] ?? []).includes(id);
   const redFlags = (a.red ?? []).filter((x) => x !== "none").length > 0 || has("degree", "severe");
 
+  // 分類は相談内容を整理するためのもの（診断ではない）。特定の薬剤には結びつけない。
   const patterns: Pattern[] = [];
-  if (has("period", "pre")) {
+  const body = (a.body ?? []).filter((x) => x !== "none");
+  if (has("skin", "acne") || has("skin", "redness")) {
     patterns.push({
-      title: "月経周期との関連が気になるパターン",
-      body: "生理前に肌が揺らぎやすいと感じている状態です。診療では、月経周期や月経に伴う体調の変化もあわせて医師にお伝えください。",
+      title: "ニキビ・炎症に関する肌悩み",
+      body: "ニキビや赤みなど、炎症をともなう肌の症状を中心に相談したい状態です。部位・期間・これまでの治療やスキンケアを整理しておくと、診療がスムーズです。",
     });
   }
-  if (has("skin", "acne") || has("skin", "redness") || has("duration", "gt6m")) {
+  if (has("skin", "dry")) {
     patterns.push({
-      title: "皮膚症状を中心に相談したいパターン",
-      body: "ニキビや赤みなど、肌の症状そのものを中心に相談したい状態です。部位・期間・これまでの治療やスキンケアを整理しておくと、診療がスムーズです。",
+      title: "乾燥を伴う肌悩み",
+      body: "乾燥やごわつきをともなう肌の状態が気になっています。季節や生活の変化で悪化するかなども、医師にお伝えください。",
     });
   }
-  const bodyItems = (a.body ?? []).filter((x) => x !== "none").length;
-  if (has("skin", "dry") || bodyItems > 0 || has("stress", "often")) {
+  if (body.includes("constipation") || body.includes("weight")) {
     patterns.push({
-      title: "乾燥や体調変化もあわせて相談したいパターン",
-      body: "肌だけでなく、冷え・むくみ・便通・睡眠などの体調もあわせて気になっている状態です。気になる体調も遠慮なく医師にお伝えください。",
+      title: "便通・体重管理に関する悩み",
+      body: "肌だけでなく、便通や体重の変化も気になっている状態です。気になる体調も遠慮なく医師にお伝えください。",
+    });
+  }
+  if (has("period", "pre") || has("pms", "often") || has("pms", "sometimes")) {
+    patterns.push({
+      title: "PMS・月経関連の不調",
+      body: "生理前に肌や体調、気分が揺らぎやすいと感じている状態です。PMS（月経前症候群）に関連する不調や、月経周期との関係もあわせて医師にお伝えください。",
+    });
+  }
+  if (body.includes("cold") || body.includes("swelling") || body.includes("hot")) {
+    patterns.push({
+      title: "冷え・むくみなどの体調の悩み",
+      body: "冷えやむくみ、のぼせなど、肌以外の体調も気になっている状態です。睡眠やストレスの状態も含めて医師にお伝えください。",
     });
   }
   if (patterns.length === 0) {
@@ -287,7 +313,7 @@ export default function SkinCheck() {
             はじめる前に
           </h2>
           <ul className="check-list" style={{ maxWidth: "none", margin: "0 0 20px" }}>
-            <li>8つの質問に、選択式で答えるだけです。</li>
+            <li>8つのステップで、選択式の質問に答えるだけです。</li>
             <li>このチェックは悩みを整理するためのもので、診断や処方の代わりではありません。</li>
             <li>費用はかかりません。LINE登録も不要です。</li>
             <li>回答はお使いのブラウザ内でのみ扱い、保存・送信はしません。</li>
@@ -351,7 +377,9 @@ export default function SkinCheck() {
           )}
 
           <p className="small-note" style={{ marginTop: 18 }}>
-            この結果は、医師に相談したい内容を整理するための目安です。病気の診断や、特定の漢方薬の推奨ではありません。漢方が適するかどうか、処方の可否は医師が診療のうえ判断します。
+            この結果は、医師に相談したい内容を整理するための目安です。病気の診断や、特定の漢方薬の推奨ではありません。
+            <br />
+            <strong>実際の処方は医師が診療のうえ判断します。</strong>
           </p>
 
           <div className="cta-stack" style={{ marginTop: 22 }}>

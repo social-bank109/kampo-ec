@@ -5,7 +5,7 @@ import SkinCheck from "@/components/vista/SkinCheck";
 export const metadata = {
   title: "肌荒れ・体調チェック",
   description:
-    "8つの質問で、医師に相談したい肌悩みと体調を整理するセルフチェック。診断・処方の代わりではありません。回答は保存・送信されません。",
+    "8つのステップで、医師に相談したい肌悩みと体調を整理するセルフチェック。診断・処方の代わりではありません。回答は保存・送信されません。",
 };
 
 export default function CheckPage() {

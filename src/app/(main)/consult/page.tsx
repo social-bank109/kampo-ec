@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { CONSULT_SETUP, FAQ_FLOW_ITEMS, FLOW_STEPS, LINE_CTA_NOTE, PLAN, TAX_LABEL, yen } from "@/config/vista";
+import { CONSULT_SETUP, MAKEUP_TEXT, FAQ_FLOW_ITEMS, FLOW_STEPS, LINE_CTA_NOTE, PLAN, TAX_LABEL, yen } from "@/config/vista";
 import SiteShell from "@/components/vista/SiteShell";
 import LineCTA from "@/components/vista/LineCTA";
 import SectionHeading from "@/components/vista/SectionHeading";
@@ -39,7 +39,7 @@ const DAY_FLOW = [
 // TODO: BUSINESS_APPROVAL — メイク・ビデオ通話の運用は提携医療機関の運用と照合すること
 const RELIEF = [
   "事前問診があるので、相談内容を整理してから受診できる",
-  "メイクをしたまま相談を開始できる",
+  "メイクをしたままでも受診できる（可能であれば診察前のメイク落としがおすすめ）",
   "通常のビデオ通話から診察を開始できる",
   "必要な肌の確認方法は医師が説明する",
   "対面診療が必要な場合は案内する",
@@ -208,7 +208,7 @@ export default function FlowPage() {
             ))}
           </ul>
           <p className="flow-step__note">
-            肌の状態を確認するため、医師がメイクを落としての確認や、カメラの角度・距離の調整をお願いすることがあります。
+            {MAKEUP_TEXT}肌の状態によっては、医師がカメラの角度や距離の調整をお願いすることがあります。
           </p>
 
           <div className="notice" style={{ marginTop: 20 }}>

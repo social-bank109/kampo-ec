@@ -188,6 +188,14 @@ export const FLOW_SHORT = [
   { n: "04", title: "決済・お届け", body: "処方がある場合に決済・発送" },
 ];
 
+/** 診察時のメイクに関する統一メッセージ（受診の必須条件にはしない） */
+export const MAKEUP_MESSAGE = {
+  main: "メイクをしたままでもオンライン診療を受けられます。",
+  caution: "ただし、メイクによって肌の状態が確認しにくくなる場合があります。",
+  recommend: "可能であれば診察前にメイクを落としておくことをおすすめします。",
+};
+export const MAKEUP_TEXT = `${MAKEUP_MESSAGE.main}${MAKEUP_MESSAGE.caution}${MAKEUP_MESSAGE.recommend}`;
+
 // ─────────────────────────────────────────────────────────────
 // FAQ（id は計測用の非センシティブな識別子）
 // ─────────────────────────────────────────────────────────────
@@ -197,7 +205,7 @@ const FAQ: Record<string, FaqItem> = {
   makeup: {
     id: "makeup",
     q: "オンライン診療では、すっぴんになる必要がありますか？",
-    a: "必ずしもメイクを落とす必要はありません。普段のメイクのままご相談いただけますが、肌の状態を確認するために、医師が必要と判断した場合はメイクを落としての確認や対面診療をご案内することがあります。",
+    a: `${MAKEUP_TEXT}メイクを落とすことは受診の必須条件ではありません。肌の状態によっては、医師が対面診療をご案内することがあります。`,
   },
   camera: {
     id: "camera",
@@ -294,136 +302,166 @@ export const FAQ_FLOW_ITEMS: FaqItem[] = [
 ];
 
 // ─────────────────────────────────────────────────────────────
-// 漢方6剤（ホーム FORMULATIONS / 詳細ページ）
+// 医療用漢方（確定6剤）— 2026/11/25 小林医師との協議結果により正式採用
 //
-// status:
-//   available … 取り扱い中（2026/11 時点で6剤すべて）
-//   planned   … 新規導入予定。仕入・院内採用・医師承認が確定するまで「導入準備中」と表示
-// TODO: MEDICAL_REVIEW — 説明文・効能効果・注意事項は、採用メーカー・剤形の最新電子添文と
-//                         提携医師の確認が必要。
+// ・ラインナップ（6剤）は確定事項。採用・除外をコード側で再判断しないこと。
+// ・「正式採用」と「在庫確保・処方開始準備の完了」は別に管理する（supply）。
+// ・効能・効果／製剤固有の注意事項・副作用は、採用メーカー・製剤の最新電子添文と
+//   医師の確認が済むまで null（公開画面では「確認中」と表示し、推測で埋めない）。
+//   TODO: MEDICAL_REVIEW
 // ─────────────────────────────────────────────────────────────
-export type KampoGroup = "skin" | "balance";
-export type KampoStatus = "available" | "planned";
+export type KampoCategory = "SKIN" | "BODY" | "BALANCE";
 
 export type Kampo = {
-  /** URL (/products/[id]) に使う ID。既存ページの ID は変更しない */
+  /** URL (/products/[id]) に使う ID */
   id: string;
-  /** public/images/vista/ の画像キー（vistaAssets.ts） */
+  /** 画像キー（vistaAssets.ts） */
   assetKey: string;
   name: string;
   reading: string;
-  group: KampoGroup;
-  status: KampoStatus;
-  /** メーカー製品番号（採用製品が確認できたもののみ） */
-  makerNumber?: string;
-  /** カードに表示する短い説明（効果を保証しない） */
-  summary: string;
-  /** 診療時に医師が確認する主なポイント */
-  checkPoints: string[];
-  /** 特に注意が必要なケース（製品別の確認が前提） */
-  cautions: string[];
+  category: KampoCategory;
+  /** カード・詳細に出す「主な紹介テーマ」（効能・効果の記載ではない） */
+  theme: string;
+  /** 処方の概要（薬効を含まない説明のみ） */
+  overview: string;
+  /** 正式な効能・効果（添付文書＋医師確認後に設定）。null = 確認中 */
+  officialIndications: string | null;
+  /** 製剤固有の主な注意事項・副作用（同上）。null = 確認中 */
+  productCautions: string[] | null;
+  /** 採用メーカー・製品番号（確定後に設定）。null = 未確定 */
+  maker: string | null;
+  /** 在庫確保・処方開始準備。unconfirmed = 未確認（公開表示はしない。運営管理用） */
+  supply: "unconfirmed" | "ready";
+  /** 医療レビューの状態 */
+  medicalReview: "pending" | "approved";
 };
 
-export const KAMPO_GROUPS: { id: KampoGroup; title: string; en: string; lead: string }[] = [
-  {
-    id: "skin",
-    title: "ニキビ・皮膚症状で検討されることがある漢方",
-    en: "SKIN",
-    lead: "肌の症状そのものについて、医師が適否を判断します。",
-  },
-  {
-    id: "balance",
-    title: "月経・冷えなど併存する症状で検討されることがある漢方",
-    en: "BODY & BALANCE",
-    lead: "肌の悩みとあわせて月経や冷えなどの症状がある場合に、その評価に応じて検討します。肌荒れそのものへの効果を約束するものではありません。",
-  },
-];
+export const KAMPO_SECTION = {
+  title: "肌と心身の状態に合わせて選ぶ、6つの医療用漢方。",
+  lead: "ニキビや肌荒れだけでなく、月経に伴う不調、冷え、便通なども確認し、一人ひとりの状態に合わせて医師が処方を検討します。",
+};
+
+const PENDING = {
+  officialIndications: null,
+  productCautions: null,
+  maker: null,
+  supply: "unconfirmed",
+  medicalReview: "pending",
+} as const;
 
 export const KAMPO: Kampo[] = [
-  {
-    id: "seijobofuto",
-    assetKey: "kampoSeijoBofuto",
-    name: "清上防風湯",
-    reading: "せいじょうぼうふうとう",
-    group: "skin",
-    status: "available",
-    makerNumber: "TJ-58",
-    summary: "赤みや炎症を伴うニキビなどで検討されることがある医療用漢方です。",
-    checkPoints: ["ニキビの部位・赤み・炎症の程度", "これまでの皮膚科治療・外用薬", "胃腸の状態や体力"],
-    cautions: ["胃腸が弱い方", "他の漢方薬・甘草を含む薬を服用中の方"],
-  },
-  {
-    id: "keigairengyoto",
-    assetKey: "kampoKeigaiRengyoto",
-    name: "荊芥連翹湯",
-    reading: "けいがいれんぎょうとう",
-    group: "skin",
-    status: "available",
-    makerNumber: "TJ-50",
-    summary: "にきびなどの皮膚症状で検討されることがある医療用漢方です。",
-    checkPoints: ["繰り返す肌の症状と経過", "鼻・のどなど他の症状の有無", "服用中の薬"],
-    cautions: ["胃腸が弱い方", "他の漢方薬・甘草を含む薬を服用中の方"],
-  },
   {
     id: "jumihaidokuto",
     assetKey: "kampoJumiHaidokuto",
     name: "十味敗毒湯",
     reading: "じゅうみはいどくとう",
-    group: "skin",
-    status: "available",
-    makerNumber: "TJ-6",
-    summary: "化膿を伴う皮膚の症状などで検討されることがある医療用漢方です。",
-    checkPoints: ["化膿・腫れの有無と範囲", "症状が出始めた時期", "アレルギー歴"],
-    cautions: ["強い痛み・発熱・急な悪化がある場合は対面受診を優先", "他の漢方薬・甘草を含む薬を服用中の方"],
+    category: "SKIN",
+    theme: "ニキビ・化膿性の皮膚症状など",
+    overview: "肌の症状についてのご相談で、医師が適否を検討する医療用漢方です。",
+    ...PENDING,
   },
   {
-    id: "keishibukuryogan",
-    assetKey: "kampoKeishiBukuryogan",
-    name: "桂枝茯苓丸",
-    reading: "けいしぶくりょうがん",
-    group: "balance",
-    status: "available",
-    makerNumber: "TJ-25",
-    summary: "月経に伴う不調やのぼせなど、併存する症状の評価に応じて検討されることがあります。",
-    checkPoints: ["月経周期と肌の状態の関係", "のぼせ・肩こり・下腹部の張り", "妊娠の可能性"],
-    cautions: ["妊娠中・妊娠の可能性がある方", "胃腸が弱い方"],
+    id: "unseiin",
+    assetKey: "kampoUnseiin",
+    name: "温清飲",
+    reading: "うんせいいん",
+    category: "SKIN",
+    theme: "乾燥を伴う皮膚症状・炎症など",
+    overview: "乾燥を伴う肌の症状などのご相談で、医師が適否を検討する医療用漢方です。",
+    ...PENDING,
   },
   {
-    id: "tokishakuyakusan",
-    assetKey: "kampoTokiShakuyakusan",
-    name: "当帰芍薬散",
-    reading: "とうきしゃくやくさん",
-    group: "balance",
-    status: "available",
-    makerNumber: "TJ-23",
-    summary: "冷えや月経に伴う不調など、併存する症状の評価に応じて検討されることがあります。",
-    checkPoints: ["冷え・むくみ・疲れやすさ", "月経に伴う不調", "胃腸の状態"],
-    cautions: ["胃腸が弱い方", "妊娠中・授乳中の方は医師に申告"],
+    id: "bofutsushosan",
+    assetKey: "kampoBofutsushosan",
+    name: "防風通聖散",
+    reading: "ぼうふうつうしょうさん",
+    category: "BODY",
+    theme: "便秘・肥満症などの身体の不調",
+    overview: "便通や体重など、身体の状態についてのご相談で、医師が適否を検討する医療用漢方です。",
+    ...PENDING,
   },
   {
     id: "kamishoyosan",
     assetKey: "kampoKamiShoyosan",
     name: "加味逍遙散",
     reading: "かみしょうようさん",
-    group: "balance",
-    status: "available",
-    makerNumber: "TJ-24",
-    summary: "月経関連の不調やいらだちなど、併存する症状の評価に応じて検討されることがあります。",
-    checkPoints: ["月経前の気分の変化・いらだち", "のぼせ・ほてり", "睡眠や便通の状態"],
-    cautions: ["胃腸が弱い方", "他の漢方薬・甘草を含む薬を服用中の方"],
+    category: "BALANCE",
+    theme: "PMS（月経前症候群）に関連する不調・精神神経症状など",
+    overview: "PMS（月経前症候群）など月経に伴う不調のご相談で、医師が適否を検討する医療用漢方です。",
+    ...PENDING,
+  },
+  {
+    id: "tokishakuyakusan",
+    assetKey: "kampoTokiShakuyakusan",
+    name: "当帰芍薬散",
+    reading: "とうきしゃくやくさん",
+    category: "BALANCE",
+    theme: "冷え・むくみ・月経関連の不調など",
+    overview: "冷えやむくみ、月経に関連する不調のご相談で、医師が適否を検討する医療用漢方です。",
+    ...PENDING,
+  },
+  {
+    id: "keishibukuryogankayokuinin",
+    assetKey: "kampoKeishiBukuryoganKaYokuinin",
+    name: "桂枝茯苓丸加薏苡仁",
+    reading: "けいしぶくりょうがんかよくいにん",
+    category: "BALANCE",
+    theme: "月経関連症状やニキビなどの皮膚症状",
+    overview:
+      "桂枝茯苓丸に薏苡仁（よくいにん）を加えた処方です。桂枝茯苓丸とは別の医療用漢方として扱います。月経に関連する症状や肌の症状のご相談で、医師が適否を検討します。",
+    ...PENDING,
   },
 ];
 
 /** 全カード共通の注記 */
 export const KAMPO_DOCTOR_NOTE = "医師判断で処方";
-/** status が planned のときに表示するバッジ */
-export const KAMPO_PLANNED_LABEL = "導入準備中";
+
+/** 効能・効果／製剤固有の注意事項が確認中のときの表示 */
+export const KAMPO_PENDING_NOTE =
+  "採用する製剤の添付文書に基づき、医師の確認後に掲載します。処方の際は、医師・薬剤師が効能・効果や注意事項をご説明します。";
 
 export function findKampo(id: string) {
   return KAMPO.find((k) => k.id === id);
 }
 
-/** 6剤共通の副作用の注意（一般論。剤ごとの確認が前提） */
+/**
+ * 確定6剤に含まれず、メインの処方一覧から除外した漢方（旧ページのURLは維持し noindex）。
+ * ※桂枝茯苓丸は「桂枝茯苓丸加薏苡仁」とは別の処方。
+ */
+export const ARCHIVED_KAMPO: { id: string; name: string; reading: string }[] = [
+  { id: "seijobofuto", name: "清上防風湯", reading: "せいじょうぼうふうとう" },
+  { id: "keigairengyoto", name: "荊芥連翹湯", reading: "けいがいれんぎょうとう" },
+  { id: "keishibukuryogan", name: "桂枝茯苓丸", reading: "けいしぶくりょうがん" },
+];
+
+// ─────────────────────────────────────────────────────────────
+// 診療コンセプト・医師の専門性
+// ─────────────────────────────────────────────────────────────
+export const CONCEPT = {
+  title: "肌だけでなく、心と身体の状態にも目を向ける。",
+  paragraphs: [
+    "肌荒れやニキビの背景には、さまざまな要因が関係することがあります。",
+    "VISTA Wellnessでは、肌の状態に加えて、PMS（月経前症候群）などの月経に伴う不調、冷え、便通、睡眠、ストレスなどについても確認します。",
+  ],
+  /** 医師の専門性に触れる一文（DOCTOR_PROFILE.publish が true のときのみ表示） */
+  withSpecialty:
+    "小林医師の精神科領域に関する専門性も活かしながら、医師が一人ひとりの状態に合わせて、医療用漢方による治療が適切かを判断します。",
+  withoutSpecialty: "医師が一人ひとりの状態に合わせて、医療用漢方による治療が適切かを判断します。",
+};
+
+export const DOCTOR_PROFILE = {
+  name: "小林医師",
+  field: "精神科領域",
+  /**
+   * 医師名・専門性を公開してよいか。
+   * TODO: BUSINESS_APPROVAL / MEDICAL_REVIEW — 正式な資格・診療体制・ご本人の掲載承認を確認後に true。
+   * ※精神科領域の専門性であり、皮膚科専門医であるかのように表現しないこと。
+   */
+  publish: false,
+};
+
+
+/** 漢方薬一般の副作用の注意（一般論。製剤ごとの注意は確認中） */
 export const KAMPO_SAFETY_NOTE =
   "漢方薬にも副作用があります。発疹・かゆみ、胃部不快感、下痢などのほか、まれに偽アルドステロン症、肝機能障害、間質性肺炎などの重い副作用が起こることがあります。起こりうる副作用や飲み合わせの注意点は薬剤によって異なるため、医師が診療時に確認します。";
 

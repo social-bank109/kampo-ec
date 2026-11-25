@@ -85,3 +85,14 @@
 | ナビ | 「診療の流れ（/#flow）」「医師への相談」→「オンライン診療（/#online）」「予約から再診までの流れ（/consult）」 |
 | 新規コンポーネント | `src/components/vista/sections/OnlineConsultIntro.tsx` / `ConsultConversation.tsx` / `OnlineAssessment.tsx`、`TrackedSection.tsx` / `TrackedLink.tsx` / `PageEvent.tsx` / `lineIcons.tsx` |
 | 設定 | `src/config/vista.ts`：`CONSULT_SETUP`（女性医師・診察時間）、7ステップの `FLOW_STEPS`、ID付き FAQ（`FAQ_ITEMS` / `FAQ_FLOW_ITEMS`） |
+
+## 7. 2026/11/25 確定6剤への切り替え
+
+| 対象 | 変更 |
+|---|---|
+| `src/config/vista.ts` | `KAMPO` を確定6剤に置換（`unseiin`・`keishibukuryogankayokuinin` を新設、`bofutsushosan` を追加）。効能・効果／注意事項／メーカー／供給状況は未確定として null・"unconfirmed" で管理。除外分は `ARCHIVED_KAMPO`。`CONCEPT`・`DOCTOR_PROFILE`・`MAKEUP_MESSAGE` を追加 |
+| `/`（トップ） | 漢方セクションを「肌と心身の状態に合わせて選ぶ、6つの医療用漢方。」の3列×2段に変更。コンセプトを「肌だけでなく、心と身体の状態にも目を向ける。」に変更。メイクの案内を統一 |
+| `/products/[id]` | 確定6剤は 概要／効能・効果／検討される悩み／注意事項・副作用／オンライン診療での処方／CTA の統一構成。清上防風湯・荊芥連翹湯・桂枝茯苓丸 と旧11剤のページは URL を維持し noindex＋ラインナップ外の注記（リダイレクトなし） |
+| `/check` | 結果分類を5つ（ニキビ・炎症／乾燥／便通・体重管理／PMS・月経関連／冷え・むくみ）に変更。PMSの設問・体重の選択肢を追加。薬剤名は表示しない |
+| `/consult` | メイクの案内を統一メッセージに変更 |
+| `src/lib/assets.ts` | 画像の拡張子違い（.webp/.jpg/.jpeg/.png）を自動で探すように変更 |

@@ -1,4 +1,4 @@
-import { CONSULT_SETUP } from "@/config/vista";
+import { CONSULT_SETUP, MAKEUP_MESSAGE } from "@/config/vista";
 import TrackedSection from "../TrackedSection";
 import SectionHeading from "../SectionHeading";
 import LineIcon, { type LineIconName } from "../lineIcons";
@@ -24,9 +24,9 @@ const CARDS: Card[] = [
   {
     icon: "mirror",
     tone: "blue",
-    title: "メイクをしたままでも相談OK",
-    body: "診察のために、必ずしもすっぴんになる必要はありません。必要な場合は、医師が肌の確認方法をご案内します。",
-    note: "肌の状態によっては、メイクを落としての確認や対面診療をご案内することがあります。",
+    title: "メイクをしたままでも受診できます",
+    body: `${MAKEUP_MESSAGE.main}${MAKEUP_MESSAGE.caution}`,
+    note: MAKEUP_MESSAGE.recommend,
   },
   {
     icon: "devices",

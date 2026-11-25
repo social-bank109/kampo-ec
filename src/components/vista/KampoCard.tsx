@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { KAMPO_DOCTOR_NOTE, KAMPO_PLANNED_LABEL, type Kampo } from "@/config/vista";
+import { KAMPO_DOCTOR_NOTE, type Kampo } from "@/config/vista";
 import { VISTA_ASSETS, type VistaAssetKey } from "@/config/vistaAssets";
 import { resolveAsset } from "@/lib/assets";
 import VistaImage from "./VistaImage";
@@ -8,7 +8,7 @@ import VistaImage from "./VistaImage";
 export function KampoArt({ k, sizes }: { k: Kampo; sizes: string }) {
   const key = k.assetKey as VistaAssetKey;
   const { available } = resolveAsset(key);
-  const groupCls = k.group === "balance" ? "kampo-art--balance" : "";
+  const groupCls = k.category === "SKIN" ? "" : "kampo-art--balance";
   if (available) {
     return (
       <div
@@ -19,15 +19,18 @@ export function KampoArt({ k, sizes }: { k: Kampo; sizes: string }) {
       </div>
     );
   }
-  const half = 2; // 「清上／防風湯」のように先頭2文字で改行
+  // 「清上／防風湯」「桂枝／茯苓丸／加薏苡仁」のように区切って表示
+  const lines = k.name.length <= 5 ? [k.name.slice(0, 2), k.name.slice(2)] : [k.name.slice(0, 2), k.name.slice(2, 5), k.name.slice(5)];
   return (
     <div className={`kampo-art ${groupCls}`} aria-hidden="true">
-      <div className="kampo-sachet">
+      <div className={`kampo-sachet ${lines.length > 2 ? "kampo-sachet--long" : ""}`}>
         <small>MEDICAL KAMPO</small>
         <b>
-          {k.name.slice(0, half)}
-          <br />
-          {k.name.slice(half)}
+          {lines.map((l, i) => (
+            <span key={i} style={{ display: "block" }}>
+              {l}
+            </span>
+          ))}
         </b>
         <em>イメージ</em>
       </div>
@@ -43,14 +46,15 @@ export default function KampoCard({ k, index }: { k: Kampo; index: number }) {
       <div className="kampo-body">
         <div className="kampo-meta">
           <span>
-            {k.group === "skin" ? "SKIN" : "BALANCE"} {String(index + 1).padStart(2, "0")}
+            {String(index + 1).padStart(2, "0")} / {k.category}
           </span>
-          {k.makerNumber && <span>{k.makerNumber}</span>}
-          {k.status === "planned" && <span className="badge badge--planned">{KAMPO_PLANNED_LABEL}</span>}
         </div>
         <h4>{k.name}</h4>
         <div className="kampo-kana">{k.reading}</div>
-        <p>{k.summary}</p>
+        <p>
+          <span className="kampo-theme-label">主な紹介テーマ</span>
+          {k.theme}
+        </p>
         <div className="kampo-foot">
           <span className="badge">{KAMPO_DOCTOR_NOTE}</span>
           <Link className="kampo-more" href={`/products/${k.id}`} aria-label={`${k.name}について詳しく見る`}>
